@@ -7,7 +7,7 @@ clc
 close all
 
 addpath('./HVfunctions/');
-addpath('./PVrfunctions/');
+addpath('./ZJ0functions/');
 addpath('./wfTools/')
 %%
 %%%%%%%%%%%
