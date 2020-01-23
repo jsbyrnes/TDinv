@@ -2,12 +2,17 @@ function [ SC ] = SC_function( Z, HN, HE, window_length, onebit, nsmooth, low, h
 %data should be iris fetch structures from just two stations. 
     
     %make the windows first
-    %convert to time
+    %convert to time 
     window_length = window_length*Z.sampleRate;
-    win_start     = 1:window_length:( length(Z.data) - window_length);
-                   
-    %make the window
     
+    if mod(window_length, 2) == 0%make it odd
+        
+        window_length = window_length - 1;
+        
+    end        
+    
+    win_start     = 1:window_length:( length(Z.data) - window_length);
+                       
     for k = 1:length(win_start)
     
         Zwin  = Z;
@@ -30,7 +35,7 @@ function [ SC ] = SC_function( Z, HN, HE, window_length, onebit, nsmooth, low, h
             Zwin.data  = sign(Zwin.data);
             HNwin.data = sign(HNwin.data);      
             HEwin.data = sign(HEwin.data);      
-            
+                        
         end
         
         Zwin  = wfFFT2(Zwin);
@@ -40,7 +45,7 @@ function [ SC ] = SC_function( Z, HN, HE, window_length, onebit, nsmooth, low, h
         Zdenom = smooth(abs(Zwin.DFT), nsmooth, 'lowess').^2;
         Ndenom = smooth(abs(HNwin.DFT), nsmooth, 'lowess').^2;
         Edenom = smooth(abs(HEwin.DFT), nsmooth, 'lowess').^2;
-        
+                
         ZZ(:, k) = real(fftshift(ifft((Zwin.DFT.*conj(Zwin.DFT))./Zdenom)));
         ZN(:, k) = real(fftshift(ifft((HNwin.DFT.*conj(Zwin.DFT))./Zdenom)));
         ZE(:, k) = real(fftshift(ifft((HEwin.DFT.*conj(Zwin.DFT))./Zdenom)));
@@ -50,7 +55,7 @@ function [ SC ] = SC_function( Z, HN, HE, window_length, onebit, nsmooth, low, h
         EE(:, k) = real(fftshift(ifft((HEwin.DFT.*conj(HEwin.DFT))./Edenom)));
         EZ(:, k) = real(fftshift(ifft((Zwin.DFT.*conj(HEwin.DFT))./Edenom)));
         EN(:, k) = real(fftshift(ifft((HNwin.DFT.*conj(HEwin.DFT))./Edenom)));
-                    
+        
         SC(:, k, 1, 1) = butterworthfilt( ZZ(:, k), 1/Z.sampleRate, low, high);
         SC(:, k, 1, 2) = butterworthfilt( ZN(:, k), 1/Z.sampleRate, low, high);
         SC(:, k, 1, 3) = butterworthfilt( ZE(:, k), 1/Z.sampleRate, low, high);
@@ -60,11 +65,12 @@ function [ SC ] = SC_function( Z, HN, HE, window_length, onebit, nsmooth, low, h
         SC(:, k, 3, 3) = butterworthfilt( EE(:, k), 1/Z.sampleRate, low, high);
         SC(:, k, 3, 1) = butterworthfilt( EZ(:, k), 1/Z.sampleRate, low, high);
         SC(:, k, 3, 2) = butterworthfilt( EN(:, k), 1/Z.sampleRate, low, high);
-                    
+        
     end
             
-    n        = length(ZZ);
-    ind_keep = round(n/2):(round(n/2) + time_keep*Z.sampleRate - 1);
+    n        = length(ZZ) - 1;
+            
+    ind_keep = round(n/2) - time_keep*Z.sampleRate:(round(n/2) + time_keep*Z.sampleRate);
         
     SC = SC(ind_keep, :, :, :);
     

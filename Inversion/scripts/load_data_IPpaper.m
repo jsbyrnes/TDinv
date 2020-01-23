@@ -1,4 +1,4 @@
-function [ HV, PVr, GVr, PVl, GVl ] = load_data( dataname )
+function [ HV, PVr, GVr, PVl, GVl ] = load_data_IPpaper( dataname )
 %load_data Load data. 
 %Possible data are HV ratios (HV), phase velocity of rayleigh waves (PVr),
 %group velocity of rayleigh waves (GVr), phase velocity of love waves

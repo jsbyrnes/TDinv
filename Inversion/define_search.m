@@ -4,7 +4,11 @@ function [ inverse_parameters ] = define_search( )
 %array of parameters for the value. First cell entry is for first
 %parameters, and so on.
     
-    inverse_parameters.n_startingpoints      = 12; %number of random models to make within ranges
+    inverse_parameters.data_path             = '.\Data\';
+    inverse_parameters.data_name             = 'LandSlideTest_shortday';
+    inverse_parameters.inversion_name        = 'InvTest';
+    
+    inverse_parameters.n_startingpoints      = 12; %number of random models to make within ranges. Per script, many indentical scripts may be submitted. 
     inverse_parameters.sig                   = 10;%in percent of the range
     inverse_parameters.iter                  = 2e5; %number of iterations of the neighborhoods
     inverse_parameters.writeOutOn            = 1e4;%how often to print to the screen
@@ -24,7 +28,7 @@ function [ inverse_parameters ] = define_search( )
     
     %how fine should you make the velocity models when you do the
     %search?
-    inverse_parameters.nz                 = 41;%file is hardwired to these
+    inverse_parameters.nz                 = 41;%mat_disp is compiled and hardwired to these
     inverse_parameters.depth              = 100;%in m
     inverse_parameters.max_knots          = 30;
     inverse_parameters.min_knots          = 1;
@@ -39,6 +43,7 @@ function [ inverse_parameters ] = define_search( )
     %max, when under the range, you use the min. 
 
     %hyperparameters
+    %Not properly enabled. 
     inverse_parameters.H.sig_style          = 'fixed';%'fixed' requires entering the errors, 'uniform' is same hierchial error for each period
     inverse_parameters.H.prior_distribution = 'log-uniform';%recommend 'log-uniform'; 'uniform' biased to high values
     inverse_parameters.H.sigHV              = 0.05;%0.01;%errors

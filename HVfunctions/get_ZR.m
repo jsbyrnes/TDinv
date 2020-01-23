@@ -1,9 +1,10 @@
-function [ HV_mean, HV_median, Czr_bounded, TV_mean, TR_mean, ...
-    R_mean, Z_mean, T_mean, phaseshift_mean, section_length, std_section, ...
-    time_start, time_end, baz_hits ] = get_rayleigh_HV( Z_data, h1_data, h2_data, ...
-    central_f, halfwidth, hit_length_seconds, baz_array, phase_range, ...
-    TR_max )
+function [ R_mean, Z_mean, T_mean, phaseshift_mean, section_length, ...
+    time_start, time_end, baz_hits ] = get_ZR( Z_data, h1_data, h2_data, ...
+    sample_rate, central_f, halfwidth, hit_length_seconds, baz_step, ...
+    phase_range, TR_max, max_hits)
 %get_rayleigh_HV. This is the main driving script.
+
+    baz_array = 0:baz_step:(360 - baz_step);
 
     HV_mean         = zeros(1);%initialize but note that they will grow, a lot
     HV_median       = zeros(1);%initialize but note that they will grow, a lot
@@ -24,48 +25,43 @@ function [ HV_mean, HV_median, Czr_bounded, TV_mean, TR_mean, ...
     HV_count = 0;
 
     %send the data and needed variables to the gpu
-    Z_data.data = (complex(single(Z_data.data)));
-    h1_data.data = (complex(single(h1_data.data)));
-    h2_data.data = (complex(single(h2_data.data)));
+    Z_data  = (complex(single(Z_data)));
+    h1_data = (complex(single(h1_data)));
+    h2_data = (complex(single(h2_data)));
 
-    Z_data.data = Z_data.data - mean(Z_data.data);
-    h1_data.data = h1_data.data - mean(h1_data.data);
-    h2_data.data = h2_data.data - mean(h2_data.data);
+    Z_data  = Z_data - mean(Z_data);
+    h1_data = h1_data - mean(h1_data);
+    h2_data = h2_data - mean(h2_data);
 
     %I could see this be extremely important for measuring the
     %instentaneous phase
-    Z_data.data = detrend(Z_data.data);
-    h1_data.data = detrend(h1_data.data);
-    h2_data.data = detrend(h2_data.data);
+    Z_data  = detrend(Z_data);
+    h1_data = detrend(h1_data);
+    h2_data = detrend(h2_data);
 
-    %divide each trace by the channel's gain
-%     Z_data.data  = Z_data.data/Z_data.sensitivity;
-%     h1_data.data = h1_data.data/h1_data.sensitivity;
-%     h2_data.data = h2_data.data/h2_data.sensitivity;
-
-    tap = tukeywin(Z_data.sampleCount, 0.9);
+    tap = tukeywin(length(Z_data), 0.01);
 
     %filter
 
-    Gfilter = (Gfilt(central_f, halfwidth, Z_data.sampleCount, (Z_data.sampleRate)));
+    Gfilter = (Gfilt(central_f, halfwidth, length(Z_data), sample_rate));
 
-    Z_data.data = real(ifft(Gfilter .* fft(real(Z_data.data).*tap)));
-    h1_data.data = real(ifft(Gfilter .* fft(real(h1_data.data).*tap)));
-    h2_data.data = real(ifft(Gfilter .* fft(real(h2_data.data).*tap)));
+    Z_data  = real(ifft(Gfilter .* fft(real(Z_data).*tap)));
+    h1_data = real(ifft(Gfilter .* fft(real(h1_data).*tap)));
+    h2_data = real(ifft(Gfilter .* fft(real(h2_data).*tap)));
 
     %only need to do this once
-    Z_analytic = hilbert(Z_data.data);
+    Z_analytic = hilbert(Z_data);
     Z_envelope = abs(Z_analytic);
     Z_phase    = unwrap(angle(Z_analytic))*(180/pi);
 
-    h1_analytic = hilbert(h1_data.data);
-    h2_analytic = hilbert(h2_data.data);
+    h1_analytic = hilbert(h1_data);
+    h2_analytic = hilbert(h2_data);
 
     %convert the hit length value to samples
-    hit_length = (hit_length_seconds/(central_f))*Z_data.sampleRate;
+    hit_length = (hit_length_seconds/(central_f))*sample_rate;
 
     %get time for the sections, in days
-    t = 0:1/Z_data.sampleRate:(Z_data.sampleCount - 1)/Z_data.sampleRate;
+    t = 0:1/sample_rate:(length(Z_data) - 1)/sample_rate;
     t = t/(24*60*60);
 
     %rotate into hypothetical R and T
@@ -123,7 +119,7 @@ function [ HV_mean, HV_median, Czr_bounded, TV_mean, TR_mean, ...
             %need to check if there is an overlapping section already saved
 
             time_start_tmp = datenum(t(ind_measure(1)));
-            time_end_tmp   = time_start_tmp + datenum(length_of_section/(Z_data.sampleRate*24*60*60));
+            time_end_tmp   = time_start_tmp + datenum(length_of_section/(sample_rate*24*60*60));
 
             start_check = time_start_tmp > time_end;
             end_check   = time_end_tmp < time_start;
@@ -135,8 +131,7 @@ function [ HV_mean, HV_median, Czr_bounded, TV_mean, TR_mean, ...
                 %need to pick the best one. The 'best' one is the max of
                 %equation (3) of Stachnik
 
-                %Czr_tmp = sum(imag(R_analytic(ind_measure)).*Z_data.data(ind_measure))/sum(Z_data.data(ind_measure).*Z_data.data(ind_measure));
-                Czr_tmp = sum(imag(R_analytic(ind_measure)).*Z_data.data(ind_measure))/sqrt(sum(imag(R_analytic(ind_measure)).*imag(R_analytic(ind_measure))).*sum(Z_data.data(ind_measure).*Z_data.data(ind_measure)));
+                Czr_tmp = sum(imag(R_analytic(ind_measure)).*Z_data(ind_measure))/sqrt(sum(imag(R_analytic(ind_measure)).*imag(R_analytic(ind_measure))).*sum(Z_data(ind_measure).*Z_data(ind_measure)));
 
                 Czr_overlapping = Czr_bounded(overlapping);
 
@@ -183,13 +178,19 @@ function [ HV_mean, HV_median, Czr_bounded, TV_mean, TR_mean, ...
             Z_mean(ind_save) = mean(Z_envelope(ind_measure));
             T_mean(ind_save) = mean(T_envelope(ind_measure));
             phaseshift_mean(ind_save) = mean(abs(phase_shift(ind_measure)));
-            section_length(ind_save) = length_of_section/Z_data.sampleRate*central_f;
+            section_length(ind_save) = length_of_section/sample_rate*central_f;
             std_section(ind_save) = std(R_envelope(ind_measure)./Z_envelope(ind_measure));
             time_start(ind_save) = time_start_tmp;
             time_end  (ind_save) = time_end_tmp;
             baz_hits(ind_save) = baz_array(i);
-            Czr(ind_save) = sum(imag(R_analytic(ind_measure)).*Z_data.data(ind_measure))/sum(Z_data.data(ind_measure).*Z_data.data(ind_measure));
-            Czr_bounded(ind_save) = sum(imag(R_analytic(ind_measure)).*Z_data.data(ind_measure))/sqrt(sum(imag(R_analytic(ind_measure)).*imag(R_analytic(ind_measure))).*sum(Z_data.data(ind_measure).*Z_data.data(ind_measure)));
+            Czr(ind_save) = sum(imag(R_analytic(ind_measure)).*Z_data(ind_measure))/sum(Z_data(ind_measure).*Z_data(ind_measure));
+            Czr_bounded(ind_save) = sum(imag(R_analytic(ind_measure)).*Z_data(ind_measure))/sqrt(sum(imag(R_analytic(ind_measure)).*imag(R_analytic(ind_measure))).*sum(Z_data(ind_measure).*Z_data(ind_measure)));
+            
+            if HV_count > max_hits
+                
+                return
+                
+            end
             
         end
 
