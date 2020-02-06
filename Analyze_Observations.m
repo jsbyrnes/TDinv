@@ -7,10 +7,8 @@ clear
 clc
 close all
 %%
-experiment_tag    = 'IP25m_test2';
+experiment_tag    = 'LandSlideTest';
 radius_threshold  = 2;%m threshold for a "cluster" of radii to stack
-
-pdf_x = -4:0.01:4;
 %%
 load(['./Data/SPAC-' experiment_tag ]);
 
@@ -62,31 +60,24 @@ load(['./Data/ZR-' experiment_tag ]);
 
 figure(length(Parameters.correlations) + 1)
 hold on
+xlabel('Frequency, Hz');
+ylabel('ZR(f)');
 
 [m,n] = size(R_mean);
 
-for k = 1:length(Parameters.central_f)
+for k = 1:m
     
     tmp = [];
     
-    for kk = 1:1
-    
-        tmp = [ tmp Z_mean{kk, k}./R_mean{kk, k} ]; 
+    for kk = 1:n
+        
+        ZR(k).value(kk) = exp(mean(log(Z_mean{k, kk}./R_mean{k, kk})));
         
     end
     
-%     pdf = ksdensity(log(tmp), pdf_x);
-%     
-%     [~, ind] = max(pdf);
-%    
-%    ZR.value(k) = exp(pdf_x(ind));
-                
-    ZR.value(k) = exp(mean(log(tmp)));
-
+    ZR(k).frequency = Parameters.central_f;
+    plot(ZR(k).frequency, ZR(k).value, 'o')
+    
 end
 
-ZR.frequency = Parameters.central_f;
-
-plot(ZR.frequency, ZR.value, 'k', 'LineWidth', 2)
-xlabel('Frequency, Hz');
-ylabel('ZR(f)');
+plot(Parameters.central_f, mean(reshape([ZR.value], size(R_mean')), 2))

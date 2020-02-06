@@ -47,8 +47,22 @@ for n = 1:npairs
     [r(n), azi(n)] = distance(dataStruct(station_pairs(n,1)).latitude, dataStruct(station_pairs(n,1)).longitude...
         , dataStruct(station_pairs(n,2)).latitude, dataStruct(station_pairs(n,2)).longitude);
                
-    %cut to the overlapping sections
-    [~, i1, i2] = intersect(dataStruct(station_pairs(n,1)).T0,dataStruct(station_pairs(n,2)).T0);
+    if strcmp(Parameters.time_cull, 'Intersection')
+    
+        %cut to the overlapping sections
+        [~, i1, i2] = intersect(dataStruct(station_pairs(n,1)).T0,dataStruct(station_pairs(n,2)).T0);
+        
+    elseif strcmp(Parameters.time_cull, 'EndPoints')
+       
+        time_start = max([ dataStruct(station_pairs(n,1)).T0(1)   dataStruct(station_pairs(n,2)).T0(1)   ]);
+        time_end   = min([ dataStruct(station_pairs(n,1)).T0(end) dataStruct(station_pairs(n,2)).T0(end) ]);
+        
+        i1 = (dataStruct(station_pairs(n,1)).T0 > time_start) & ...
+            (dataStruct(station_pairs(n,1)).T0 < time_end);
+        i2 = (dataStruct(station_pairs(n,2)).T0 > time_start) & ...
+            (dataStruct(station_pairs(n,2)).T0 < time_end);
+        
+    end
         
     if length(Parameters.channels) == 3
         
@@ -163,7 +177,7 @@ for i = 1:length(dataStruct)
     for k = 1:length(Parameters.central_f)
                 
         [ R_mean{i, k}, Z_mean{i, k}, T_mean{i, k}, phaseshift{i, k}, ...
-            section_length{i, k}, time_start{i, k}, ~, baz_hits{i, k} ] = get_ZR(dataStruct(i).data{1}, ...
+            section_length{i, k}, time_start{i, k}, ~, baz_hits{i, k}, CZR{i, k}] = get_ZR(dataStruct(i).data{1}, ...
             dataStruct(i).data{2}, dataStruct(i).data{3}, dataStruct(i).sampleRate, Parameters.central_f(k), ...
             Parameters.halfwidth(k), Parameters.hitlength_cycles, Parameters.baz_step,...
             Parameters.phase_range, Parameters.TR_max, Parameters.max_hits, Parameters.downsample, ...
@@ -176,7 +190,7 @@ for i = 1:length(dataStruct)
 end
 
 save([ Parameters.data_dir 'ZR-' Parameters.run_name ], 'Parameters', 'R_mean', 'Z_mean', 'T_mean', 'time_start', 'baz_hits', ...
-    'phaseshift', 'section_length');
+    'phaseshift', 'section_length', 'CZR');
 
 %%
 %     %now clip
