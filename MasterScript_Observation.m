@@ -9,6 +9,7 @@ close all
 addpath('./Functions/');
 addpath('./wfTools/');
 addpath('./IPGP-sac-matlab-c67a67e');
+
 %%
 %%%%%%%%%%%
 %Parameters
@@ -26,6 +27,7 @@ elseif strcmp(Parameters.file_type, 'miniseed')
     dataStruct = load_miniseed_data(Parameters);
     
 end
+
 %%
 %%%%%%%%
 %do SPAC

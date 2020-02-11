@@ -7,7 +7,7 @@ clear
 clc
 close all
 %%
-experiment_tag    = 'LandSlideTest';
+experiment_tag    = 'IP4000';
 radius_threshold  = 2;%m threshold for a "cluster" of radii to stack
 %%
 load(['./Data/SPAC-' experiment_tag ]);
@@ -71,7 +71,7 @@ for k = 1:m
     
     for kk = 1:n
         
-        ZR(k).value(kk) = exp(mean(log(Z_mean{k, kk}./R_mean{k, kk})));
+        ZR(k).value(kk) = median(Z_mean{k, kk}./R_mean{k, kk});%exp(mean(log(Z_mean{k, kk}./R_mean{k, kk})));
         
     end
     
@@ -80,4 +80,4 @@ for k = 1:m
     
 end
 
-plot(Parameters.central_f, mean(reshape([ZR.value], size(R_mean')), 2))
+plot(Parameters.central_f, mean(reshape([ZR.value], size(R_mean')), 2), 'k')

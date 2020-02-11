@@ -43,7 +43,7 @@ function dataStruct = load_sac_data(Parameters)
         if any(chan_ind)
 
             dataStruct(index).H(chan_ind)           = H;
-            dataStruct(index).data{chan_ind}        = d;%can be different lengths
+            dataStruct(index).data{chan_ind}        = Parameters.sign(chan_ind)*d;%can be different lengths
             dataStruct(index).azimuth(chan_ind)     = H.CMPAZ;%common fields
             dataStruct(index).inclination(chan_ind) = H.CMPINC;%common fields
 
