@@ -7,8 +7,8 @@ clear
 clc
 close all
 %%
-experiment_tag    = 'IP4000';
-radius_threshold  = 2;%m threshold for a "cluster" of radii to stack
+experiment_tag    = 'DiamondArray';
+radius_threshold  = 4;%m threshold for a "cluster" of radii to stack
 %%
 load(['./Data/SPAC-' experiment_tag ]);
 
@@ -71,7 +71,7 @@ for k = 1:m
     
     for kk = 1:n
         
-        ZR(k).value(kk) = median(Z_mean{k, kk}./R_mean{k, kk});%exp(mean(log(Z_mean{k, kk}./R_mean{k, kk})));
+        ZR(k).value(kk) = exp(mean(log((Z_mean{k, kk}./R_mean{k, kk}))));%exp(mean(log(Z_mean{k, kk}./R_mean{k, kk})));
         
     end
     

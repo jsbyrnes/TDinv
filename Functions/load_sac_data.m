@@ -34,16 +34,20 @@ function dataStruct = load_sac_data(Parameters)
         dataStruct(index).station        = H.KSTNM;
         dataStruct(index).latitude       = H.STLA;
         dataStruct(index).longitude      = H.STLO;
-        dataStruct(index).sampleCount    = length(d);%assumed common for each channel
-        dataStruct(index).T0             = T0 + ((0:(dataStruct(index).sampleCount - 1))...
+        dataStruct(index).T0             = T0 + ((0:(length(d) - 1))...
             /dataStruct(index).sampleRate)/(60*60*24);%assumed common for each channel
 
+        ind = dataStruct(index).T0 >= Parameters.time_window(1) &...
+            dataStruct(index).T0 <= Parameters.time_window(2);
+        
+        dataStruct(index).sampleCount    = length(d(ind));%assumed common for each channel
+        dataStruct(index).T0             = dataStruct(index).T0(ind);
         chan_ind = strcmp(H.KCMPNM, Parameters.channels);
 
         if any(chan_ind)
 
             dataStruct(index).H(chan_ind)           = H;
-            dataStruct(index).data{chan_ind}        = Parameters.sign(chan_ind)*d;%can be different lengths
+            dataStruct(index).data{chan_ind}        = Parameters.sign(chan_ind)*d(ind);%can be different lengths
             dataStruct(index).azimuth(chan_ind)     = H.CMPAZ;%common fields
             dataStruct(index).inclination(chan_ind) = H.CMPINC;%common fields
 
