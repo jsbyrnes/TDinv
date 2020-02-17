@@ -165,7 +165,7 @@ end
 
 r = r*111.12*1000;%convert to m
 
-save([ Parameters.data_dir 'SPAC-' Parameters.run_name ], 'Parameters', 'C', 'C_error', 'r', 'azi');%'C_error',
+save([ './Observations/SPAC-' Parameters.run_name ], 'Parameters', 'C', 'C_error', 'r', 'azi');%'C_error',
 clear C C_error data1 data2 Ctmp C_errortmp index index1 index2 list r azi T0 time_end time_start tind1 tind2
 
 %%
@@ -191,7 +191,7 @@ for i = 1:length(dataStruct)
         
 end
 
-save([ Parameters.data_dir 'ZR-' Parameters.run_name ], 'Parameters', 'R_mean', 'Z_mean', 'T_mean', 'time_start', 'baz_hits', ...
+save([ './Observations/ZR-' Parameters.run_name ], 'Parameters', 'R_mean', 'Z_mean', 'T_mean', 'time_start', 'baz_hits', ...
     'phaseshift', 'section_length', 'CZR');
 
 %%

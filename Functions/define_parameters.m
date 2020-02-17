@@ -1,7 +1,6 @@
 function [Parameters] = define_parameters( )
 
     Parameters.run_name        = 'DiamondArray';
-    Parameters.data_dir        = './Data/';
 
     %directory for sac files
     Parameters.file_type       = 'SAC';

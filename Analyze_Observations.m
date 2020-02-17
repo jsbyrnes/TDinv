@@ -10,7 +10,7 @@ close all
 experiment_tag    = 'DiamondArray';
 radius_threshold  = 4;%m threshold for a "cluster" of radii to stack
 %%
-load(['./Data/SPAC-' experiment_tag ]);
+load(['./Observations/SPAC-' experiment_tag ]);
 
 %%%%%%make clusters of radii
 
@@ -56,7 +56,7 @@ end
 %%
 %%%%%Now do ZR
 
-load(['./Data/ZR-' experiment_tag ]);
+load(['./Observations/ZR-' experiment_tag ]);
 
 figure(length(Parameters.correlations) + 1)
 hold on
