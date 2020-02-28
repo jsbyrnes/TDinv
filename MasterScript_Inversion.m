@@ -7,9 +7,7 @@
 clear
 close all
 
-dataname = './IrishPark25m/run25mday2_20Hz_complex.mat';
 addpath(genpath('./Inversion/'));
-inversion_name = 'TD_IP';
 
 %%%%%%
 %define the search
@@ -20,11 +18,11 @@ inverse_parameters = define_search;
 %load the HV ratios and velocities to invert
 %The code does not currently handle any components other than single model ZJ0
 [ZR, ZJ0] = load_data(inverse_parameters);
-ZR = ZR(1); %only use data from one of the stations
-
+ZR  = ZR(1); %only use data from one of the stations
+ZJ0 = ZJ0(1);
 %%
-%p = parpool;
-p.NumWorkers = 1;
+p = parpool;
+%p.NumWorkers = 1;
 
 %%%%%%%%%%%%%%%%
 %Modify this line if 
@@ -32,7 +30,7 @@ starting_m = [];
 
 for i = 1:(inverse_parameters.n_startingpoints/p.NumWorkers)
 
-    for k = 1:p.NumWorkers
+    parfor k = 1:p.NumWorkers
             
         modelhist{:, k} = run_search(ZR, ZJ0, inverse_parameters, k, starting_m);
 

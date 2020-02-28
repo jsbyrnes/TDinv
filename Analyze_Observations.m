@@ -8,7 +8,8 @@ clc
 close all
 %%
 experiment_tag    = 'DiamondArray';
-radius_threshold  = 4;%m threshold for a "cluster" of radii to stack
+radius_threshold  = 2;%m threshold for a "cluster" of radii to stack
+
 %%
 load(['./Observations/SPAC-' experiment_tag ]);
 
@@ -77,7 +78,9 @@ for k = 1:m
     
     ZR(k).frequency = Parameters.central_f;
     plot(ZR(k).frequency, ZR(k).value, 'o')
-    
+
 end
 
 plot(Parameters.central_f, mean(reshape([ZR.value], size(R_mean')), 2), 'k')
+
+save(['./Observations/ZR-' experiment_tag ], 'ZR', '-append');

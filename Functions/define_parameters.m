@@ -20,7 +20,7 @@ function [Parameters] = define_parameters( )
     Parameters.make_complex     = 0;
     Parameters.integrate        = 0;
     Parameters.onebit           = 0;
-    Parameters.freq_range       = 1:0.5:30;
+    Parameters.freq_range       = 0.25:0.25:30;
     Parameters.df               = 0.05*ones(size(Parameters.freq_range));
     Parameters.segment_length   = 50;
     Parameters.filter_type      = 'Gaussian';%Gaussian or Butterworth
@@ -30,7 +30,7 @@ function [Parameters] = define_parameters( )
     %for ZR ratios
     %parameters to control the search for rayleigh waves.
     Parameters.baz_step           = 1; %when testing for a rayleigh wave, the code looks at test back azimuths, searching with this increment.
-    Parameters.central_f          = 0.5:0.5:30; %central frequencies to look at. In Hz.
+    Parameters.central_f          = 0.25:0.25:30; %central frequencies to look at. In Hz.
     Parameters.halfwidth          = 0.05*ones(size(Parameters.central_f));%half width of the Gaussian filter in Hz
     Parameters.phase_range        = 3; %90 degrees +/- this phase shift to for a Rayleigh wave
     Parameters.TR_max             = 5; %maximum ratio of transverse to radial energy for the test back azimuth. If the transverse is huge the rayleigh wave might not be very good. The results are not very sensitive to this threshold.
