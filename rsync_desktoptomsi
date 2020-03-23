@@ -1,0 +1,3 @@
+#!/bin/sh
+
+rsync -avr --delete ./ jsbyrnes@login.msi.umn.edu:/home/bezadam/jsbyrnes/TD_Shallow/

@@ -1,13 +1,13 @@
-function [ Z_data, h1_data, h2_data ] = load_data_irisFetch( sta_network, sta_name, sta_loc, ...
+function [ Z_data, h1_data, h2_data ] = irisFetch_call( sta_network, sta_name, sta_loc, ...
  channel_list, start_tmp, end_tmp, decimate_factor)
 %load_data_irisFetch 
 
     pause(1)
-    Z_data = irisFetch.Traces(sta_network, sta_name, sta_loc, channel_list(1, :), start_tmp, end_tmp);
+    Z_data = irisFetch.Traces(sta_network, sta_name, sta_loc, channel_list{1}, start_tmp, end_tmp);
     pause(1)
-    h1_data = irisFetch.Traces(sta_network, sta_name, sta_loc, channel_list(2, :), start_tmp, end_tmp);
+    h1_data = irisFetch.Traces(sta_network, sta_name, sta_loc, channel_list{2}, start_tmp, end_tmp);
     pause(1)
-    h2_data = irisFetch.Traces(sta_network, sta_name, sta_loc, channel_list(3, :), start_tmp, end_tmp);
+    h2_data = irisFetch.Traces(sta_network, sta_name, sta_loc, channel_list{3}, start_tmp, end_tmp);
 
     %need to do checks here to see if you got anything
     if isempty(Z_data) || isempty(h1_data) || isempty(h2_data)
@@ -132,19 +132,6 @@ function [ Z_data, h1_data, h2_data ] = load_data_irisFetch( sta_network, sta_na
         h2_data = [];
 
         return
-
-    end
-
-    %decimate the traces to a factor what I'll filter to
-    %Does not work. 
-    if decimate_factor > 0
-
-        %decimate to the new sampling rate
-        tmp_data = resam([ Z_data.sampleRate h1_data.sampleRate h2_data.sampleRate] , 80, ...
-            [ Z_data.data; h1_data.data; h2_data.data]);
-        Z_data.data = tmp_data(:, 1);
-        h1_data.data = tmp_data(:, 2);
-        h2_data.data = tmp_data(:, 3);
 
     end
 

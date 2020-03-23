@@ -12,6 +12,9 @@ addpath(genpath('./Inversion/'));
 %%%%%%
 %define the search
 inverse_parameters = define_search;
+
+inverse_parameters.log_depths      = 1; %log2-spacing of depths?
+inverse_parameters.inversion_name  = 'IP1000_log';
 %%%%%%
 
 %%%%%%

@@ -31,23 +31,13 @@ function [ model, alpha ] = make_newmodel( model, inverse_parameters, HV, ZJ0 )
         
         if strcmp(inverse_parameters.H.sig_style, 'fixed')
         
-            if inverse_parameters.squeeze_step == 0
-
-                action = randi([ 1 4 ], 1);
-            
-            elseif inverse_parameters.squeeze_step == 1
-               
-                action = randi([ 1 5 ], 1);
-                
-            end
-                
-        elseif strcmp(inverse_parameters.H.sig_style, 'uniform')%not set up
+            action = randi([ 1 4 ], 1);
+                            
+        else %inverting for errors
            
-            action = randi([ 1 6 ], 1);%not enabled
+            action = randi([ 1 5 ], 1);%not enabled
             
         end
-
-        %action = 3;%for debugging
                     
         if action == 2 && (model.(mode).n == inverse_parameters.min_knots)
            
@@ -436,67 +426,92 @@ function [ model, alpha ] = make_newmodel( model, inverse_parameters, HV, ZJ0 )
                 end
                 
             end
-       
-        case 5 %collect/seperate adjacent nodes
-            
-            while ~modelN.valid %techincally could be infinite
-            
-                modelN       = model; %will loop, and don't want to build up pert
-                modelN.valid = 1;
-
-                change1 = randi(modelN.(mode).n, 1);
-                
-                pert = normrnd(0, sig);
-                
-                modelN.(mode).value(change1)   = modelN.(mode).value(change1) + pert;
-                
-                if change1 == 1 %top node
-                
-                    change2 = 1;
-                    
-                elseif change1 == modelN.(mode).n %bottom node
-                    
-                    change2 = -1;
-                    
-                else
                    
-                    change2 = (-1).^(randi([1 2] ,1));
-                    
-                end
-                
-                modelN.(mode).value(change1 + change2)   = modelN.(mode).value(change1 + change2) - pert;%opposite sign
-                
-                if modelN.(mode).value(change1) < inverse_parameters.limits.(mode)(1) || modelN.(mode).value(change1) > inverse_parameters.limits.(mode)(2)
-                    
-                    modelN.valid = 0;
-                    
-                end
-                
-                if modelN.(mode).value(change1 + change2) < inverse_parameters.limits.(mode)(1) || modelN.(mode).value(change1 + change2) > inverse_parameters.limits.(mode)(2)
-                    
-                    modelN.valid = 0;
-                    
-                end
-                
-                if modelN.valid
-                
-                    [ modelN ] = evaluate_models_matdisp(modelN, HV, ZJ0, inverse_parameters);
+        case 5
+            
+            r = log(rand(1));
+            
+            if strcmp(inverse_parameters.H.sig_style, 'uniform')
 
-                end
-                    
-                count = count + 1;
+                HV_error    = model.HV_error*ones(size(HV.value));
+                ZJ0_error   = model.ZJ0_error*ones(size(ZJ0.value));
                 
-                if count > max_count
+                choose = randi(2, 1);
+                
+                if choose == 1
+                   
+                    modelN.HV_error = normrnd(modelN.HV_error, inverse_parameters.H.sigHV);
+
+                    if modelN.HV_error < inverse_parameters.H.sigHV_limits(1) || modelN.HV_error > inverse_parameters.H.sigHV_limits(2)
+                       
+                        r = Inf;
+                        
+                    end
                     
-                    return
+                elseif choose == 2
+                    
+                    modelN.ZJ0_error = normrnd(modelN.ZJ0_error, inverse_parameters.H.sigZJ0);
+                    
+                    if modelN.ZJ0_error < inverse_parameters.H.sigZJ0_limits(1) || modelN.ZJ0_error > inverse_parameters.H.sigZJ0_limits(2)
+                       
+                        r = Inf;
+                        
+                    end
                     
                 end
+                
+                HV_errorN   = modelN.HV_error*ones(size(HV.value));
+                ZJ0_errorN  = modelN.ZJ0_error*ones(size(ZJ0.value));
+                
+            elseif strcmp(inverse_parameters.H.sig_style, 'linear')
+
+                HV_error    = linspace(model.HV_error(1), model.HV_error(2), length(HV.value));
+                ZJ0_error   = linspace(model.ZJ0_error(1), model.ZJ0_error(2), length(ZJ0.value));
+            
+                choose = randi(2, 1);
+                
+                if choose == 1
+                   
+                    choose = randi(2, 1);
+                    modelN.HV_error(choose) = normrnd(modelN.HV_error(choose), inverse_parameters.H.sigHV);
+                    
+                    if modelN.HV_error(choose) < inverse_parameters.H.sigHV_limits(1) || modelN.HV_error(choose) > inverse_parameters.H.sigHV_limits(2)
+                       
+                        r = Inf;
+                        
+                    end
+                    
+                elseif choose == 2
+                    
+                    choose = randi(2, 1);
+                    modelN.ZJ0_error(choose) = normrnd(modelN.ZJ0_error(choose), inverse_parameters.H.sigZJ0);
+                    
+                    if modelN.ZJ0_error(choose) < inverse_parameters.H.sigZJ0_limits(1) || modelN.ZJ0_error(choose) > inverse_parameters.H.sigZJ0_limits(2)
+                       
+                        r = Inf;
+                        
+                    end
+                    
+                end
+                
+                HV_errorN   = linspace(modelN.HV_error(1), modelN.HV_error(2), length(HV.value));
+                ZJ0_errorN  = linspace(modelN.ZJ0_error(1), modelN.ZJ0_error(2), length(ZJ0.value));
                 
             end
-                
-            alpha = min([1 exp(-(modelN.fit - model.fit)/2) ]);
             
-            r = rand(1);
+            %get fits without running mat_disp, makes this a free step
+            modelN.ZJ0fit = sum(((modelN.ZJ0 - ZJ0.value)./ZJ0_errorN).^2);
+            modelN.HVfit  = sum(((modelN.HV - HV.value)./HV_errorN).^2);
+            modelN.fit    = modelN.ZJ0fit + modelN.HVfit;
+            modelN.nfit   = modelN.fit/(length(HV.value) + length(ZJ0.value));
+            modelN.llh    = -0.5*(log(2*pi)*(length(modelN.HV) + length(modelN.ZJ0)) + ...
+                sum(log(HV_errorN)) + sum(log(ZJ0_errorN)) - modelN.fit);
+            %uncorrelated errors, so the determinent is just the product of
+            %the trace, here as a log
+            detold = sum(log(HV_error))  + sum(log(ZJ0_error));
+            detnew = sum(log(HV_errorN)) + sum(log(ZJ0_errorN));
+            
+            alpha = min([ 0 (detold - detnew - (modelN.fit - model.fit)/2)]); 
             
             if r <= alpha
                 
@@ -658,6 +673,74 @@ end
 %                 - (modelN.fit - model.fit)/2 ) ]);
 %             
 %             r = log(rand(1));
+%             if r <= alpha
+%                 
+%                 model = modelN;
+%                 
+%             end
+
+
+%         case 5 %collect/seperate adjacent nodes
+%             
+%             while ~modelN.valid %techincally could be infinite
+%             
+%                 modelN       = model; %will loop, and don't want to build up pert
+%                 modelN.valid = 1;
+% 
+%                 change1 = randi(modelN.(mode).n, 1);
+%                 
+%                 pert = normrnd(0, sig);
+%                 
+%                 modelN.(mode).value(change1)   = modelN.(mode).value(change1) + pert;
+%                 
+%                 if change1 == 1 %top node
+%                 
+%                     change2 = 1;
+%                     
+%                 elseif change1 == modelN.(mode).n %bottom node
+%                     
+%                     change2 = -1;
+%                     
+%                 else
+%                    
+%                     change2 = (-1).^(randi([1 2] ,1));
+%                     
+%                 end
+%                 
+%                 modelN.(mode).value(change1 + change2)   = modelN.(mode).value(change1 + change2) - pert;%opposite sign
+%                 
+%                 if modelN.(mode).value(change1) < inverse_parameters.limits.(mode)(1) || modelN.(mode).value(change1) > inverse_parameters.limits.(mode)(2)
+%                     
+%                     modelN.valid = 0;
+%                     
+%                 end
+%                 
+%                 if modelN.(mode).value(change1 + change2) < inverse_parameters.limits.(mode)(1) || modelN.(mode).value(change1 + change2) > inverse_parameters.limits.(mode)(2)
+%                     
+%                     modelN.valid = 0;
+%                     
+%                 end
+%                 
+%                 if modelN.valid
+%                 
+%                     [ modelN ] = evaluate_models_matdisp(modelN, HV, ZJ0, inverse_parameters);
+% 
+%                 end
+%                     
+%                 count = count + 1;
+%                 
+%                 if count > max_count
+%                     
+%                     return
+%                     
+%                 end
+%                 
+%             end
+%                 
+%             alpha = min([1 exp(-(modelN.fit - model.fit)/2) ]);
+%             
+%             r = rand(1);
+%             
 %             if r <= alpha
 %                 
 %                 model = modelN;

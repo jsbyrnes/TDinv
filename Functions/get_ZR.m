@@ -154,11 +154,14 @@ function [ R_mean, Z_mean, T_mean, phaseshift_mean, section_length, ...
 
                 if ~isempty(overlapping)
 
-                    Czr_tmp = sum(imag(R_analytic(ind_measure)).*Z_data(ind_measure))/sqrt(sum(imag(R_analytic(ind_measure)).*imag(R_analytic(ind_measure))).*sum(Z_data(ind_measure).*Z_data(ind_measure)));
-                    Czr_overlapping = Czr_bounded(overlapping);
-
+                    %Czr_tmp = sum(imag(R_analytic(ind_measure)).*Z_data(ind_measure))/sqrt(sum(imag(R_analytic(ind_measure)).*imag(R_analytic(ind_measure))).*sum(Z_data(ind_measure).*Z_data(ind_measure)));
+                    %Czr_overlapping = Czr_bounded(overlapping);
+                    
+                    phaseshift_tmp          = rms(phase_shift(ind_measure));
+                    phaseshift_overlapping = phaseshift_mean(overlapping);
                     %compare the TR ratios of overlapping sections
-                    if any(Czr_tmp < Czr_overlapping)
+                    %if any(Czr_tmp < Czr_overlapping)
+                    if any(phaseshift_tmp < phaseshift_overlapping)
 
                         continue %there is another with a larger correlation
 
@@ -200,7 +203,7 @@ function [ R_mean, Z_mean, T_mean, phaseshift_mean, section_length, ...
                 R_mean(ind_save)          = mean(R_envelope(ind_measure));
                 Z_mean(ind_save)          = mean(Z_envelope(ind_measure));
                 T_mean(ind_save)          = mean(T_envelope(ind_measure));
-                phaseshift_mean(ind_save) = mean(abs(phase_shift(ind_measure)));
+                phaseshift_mean(ind_save) = rms(phase_shift(ind_measure));%mean(abs(phase_shift(ind_measure)));
                 section_length(ind_save)  = length_of_section/new_sr*central_f;
                 std_section(ind_save)     = std(R_envelope(ind_measure)./Z_envelope(ind_measure));
                 time_start(ind_save)      = time_start_tmp;

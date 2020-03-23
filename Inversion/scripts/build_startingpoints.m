@@ -23,26 +23,25 @@ function [ model ] = build_startingpoints( inverse_parameters, HV_error, PVr_err
     model.vpvs.value(end) = model.vpvs.value(ind);
     model.vpvs.value(ind) = tmp;
                                 
-    if inverse_parameters.H.sig_style == 0
+    if strcmp(inverse_parameters.H.sig_style, 'fixed')
         
         model.HV_error  = HV_error;
         model.ZJ0_error = PVr_error;
         
-    elseif inverse_parameters.H.sig_style == 1
+    elseif strcmp(inverse_parameters.H.sig_style, 'uniform')
        
         model.HV_error  = rand(1)*(inverse_parameters.H.sigHV_limits(2) - inverse_parameters.H.sigHV_limits(1)) ...
             + inverse_parameters.H.sigHV_limits(1);
         model.ZJ0_error = rand(1)*(inverse_parameters.H.sigZJ0_limits(2) - inverse_parameters.H.sigZJ0_limits(1)) ...
             + inverse_parameters.H.sigZJ0_limits(1);
-       
-        if strcmp(inverse_parameters.H.prior_distribution, 'log-uniform')
-           
-            %these were selected as log values
-            model.HV_error  = exp(model.HV_error);
-            model.ZJ0_error = exp(model.ZJ0_error);
-            
-        end
         
+    elseif strcmp(inverse_parameters.H.sig_style, 'linear')
+       
+        model.HV_error  = rand(2, 1)*(inverse_parameters.H.sigHV_limits(2) - inverse_parameters.H.sigHV_limits(1)) ...
+            + inverse_parameters.H.sigHV_limits(1);
+        model.ZJ0_error = rand(2, 1)*(inverse_parameters.H.sigZJ0_limits(2) - inverse_parameters.H.sigZJ0_limits(1)) ...
+            + inverse_parameters.H.sigZJ0_limits(1);
+               
     end
     
     if inverse_parameters.delay_HV

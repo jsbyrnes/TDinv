@@ -1,0 +1,3 @@
+#!/bin/sh
+
+rsync -avru jsbyrnes@login.msi.umn.edu:/home/bezadam/jsbyrnes/TD_Shallow/ /cygdrive/c/Research/TDinv/

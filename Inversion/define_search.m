@@ -5,8 +5,8 @@ function [ inverse_parameters ] = define_search( )
 %parameters, and so on.
     
     inverse_parameters.data_path             = './Observations/';
-    inverse_parameters.data_name             = 'DiamondArray';
-    inverse_parameters.inversion_name        = 'DiamondArray';
+    inverse_parameters.data_name             = 'IP1000';
+    inverse_parameters.inversion_name        = 'IP1000';
     inverse_parameters.radius_threshold      = 2;%m threshold for a "cluster" of radii to stack
 
     inverse_parameters.n_startingpoints      = 12; %number of random models to make within ranges. Per script, many indentical scripts may be submitted. 
@@ -25,12 +25,12 @@ function [ inverse_parameters ] = define_search( )
     inverse_parameters.delay_HV              = 0; %set error on HV to near infinite until ZJ0 is fit. Don't use. 
     inverse_parameters.enforce_ZJ0           = 0; %don't let the ZJ0 fit exceed 1.5 of the HV fit. Don't use. 
     inverse_parameters.enforce_fasthalfspace = 0; %make the lowest layer the fastest layer. Not working. 
-    inverse_parameters.log_depths            = 0; %log-spacing of depths?
+    inverse_parameters.log_depths            = 0; %log2-spacing of depths?
     
     %how fine should you make the velocity models when you do the
     %search?
     inverse_parameters.nz                 = 41;%mat_disp is compiled and hardwired to these at the moment. 
-    inverse_parameters.depth              = 75;%in m
+    inverse_parameters.depth              = 200;%in m
     inverse_parameters.max_knots          = 30;
     inverse_parameters.min_knots          = 1;
     inverse_parameters.max_vs_curvature   = Inf;%1e2;%set empirically to remove extreme features
@@ -45,11 +45,10 @@ function [ inverse_parameters ] = define_search( )
 
     %hyperparameters
     %Not properly enabled yet. In the works. 
-    inverse_parameters.H.sig_style          = 'fixed';%'fixed' requires entering the errors, 'uniform' is same hierchial error for each period
-    inverse_parameters.H.prior_distribution = 'log-uniform';%recommend 'log-uniform'; 'uniform' biased to high values
+    inverse_parameters.H.sig_style          = 'linear';%'fixed' requires entering the errors, 'uniform' is same hierchial error for each period. linear is end to end line for errors
     inverse_parameters.H.sigHV              = 0.05;%0.01;%errors
     inverse_parameters.H.sigZJ0             = 0.05;%0.0025;%errors
-    inverse_parameters.H.sigHV_limits       = [ 0.02 0.2];%errors
-    inverse_parameters.H.sigZJ0_limits      = [ 0.02 0.2];%errors
+    inverse_parameters.H.sigHV_limits       = [ 0.01 0.5];%errors
+    inverse_parameters.H.sigZJ0_limits      = [ 0.01 0.5];%errors
     
 end

@@ -34,30 +34,38 @@ function [ model ] = evaluate_models_matdisp( model, HV, ZJ0, inverse_parameters
     
     if strcmp(inverse_parameters.H.sig_style, 'uniform')
     
-        model.HVfit = sum(((model.HV - HV.value)/model.HV_error).^2);
-        HVllh       = sum(-length(HV.value)*log(model.HV_error)- 0.5*model.HVfit);
+        HV_error    = model.HV_error*ones(size(HV.value));
+
+    elseif strcmp(inverse_parameters.H.sig_style, 'linear')
+    
+        HV_error    = linspace(model.HV_error(1), model.HV_error(2), length(HV.value));
        
     elseif strcmp(inverse_parameters.H.sig_style, 'fixed')
         
-        model.HVfit = sum(((model.HV - HV.value)./HV.error).^2);
-        HVllh       = sum(-log(HV.error)- 0.5*model.HVfit);
+        HV_error    = HV.error;
         
     end
+    
+    model.HVfit = sum(((model.HV - HV.value)./HV_error).^2);
     
     if any(PVr_model) ~= 0 %some models don't have a velocity, skip them. They aren't physical.
         
         if strcmp(inverse_parameters.H.sig_style, 'fixed')
 
-            model.ZJ0fit = sum(((model.ZJ0 - ZJ0.value)./ZJ0.error).^2);
-            ZJ0llh       = sum(-log(ZJ0.error)- 0.5*model.ZJ0fit);
+            ZJ0_error    = ZJ0.error;
 
+        elseif strcmp(inverse_parameters.H.sig_style, 'linear')
+    
+            ZJ0_error    = linspace(model.ZJ0_error(1), model.ZJ0_error(2), length(ZJ0.value));
+            
         elseif strcmp(inverse_parameters.H.sig_style, 'uniform')
 
-            model.ZJ0fit = sum(((model.ZJ0 - ZJ0.value)./model.ZJ0_error).^2);
-            ZJ0llh       = sum(-length(ZJ0.value)*log(model.ZJ0_error)- 0.5*model.ZJ0fit);
+            ZJ0_error    = model.ZJ0_error*ones(size(ZJ0.value));
 
         end
-                
+        
+        model.ZJ0fit = sum(((model.ZJ0 - ZJ0.value)./ZJ0_error).^2);
+        
     else
         
         %disp('Zero PVr')
@@ -66,26 +74,10 @@ function [ model ] = evaluate_models_matdisp( model, HV, ZJ0, inverse_parameters
         
     end
     
-    if model.disable_HV == 0
-    
-        model.fit  = model.HVfit + model.ZJ0fit;
-        model.nfit = model.fit/(length(model.HV) + length(model.ZJ0));
-        model.llh  = HVllh + ZJ0llh - 0.5*log(2*pi);
-
-        if model.ZJ0fit/length(model.ZJ0) > (model.HVfit/length(model.HV))*inverse_parameters.enforce_ZJ0 ...
-                && inverse_parameters.enforce_ZJ0 > 0 %check if HV is just disabled
-
-            model.valid = 0;
-
-        end
-        
-    elseif model.disable_HV == 1
-    
-        model.fit  = model.ZJ0fit;
-        model.nfit = model.fit/(length(model.ZJ0));
-        model.llh  = (ZJ0llh - 0.5*log(2*pi));
-        
-    end
+    model.fit  = model.HVfit + model.ZJ0fit;
+    model.nfit = model.fit/(length(model.HV) + length(model.ZJ0));
+    model.llh  = -0.5*(log(2*pi)*(length(model.HV) + length(model.ZJ0)) + ...
+        sum(log(HV_error)) + sum(log(ZJ0_error)) - model.fit);
     
 end
 

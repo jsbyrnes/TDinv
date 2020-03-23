@@ -23,14 +23,7 @@ function [ modelhist ] = run_search( HV, ZJ0, inverse_parameters, chainind, star
         ZJ0.value     = ZJ0.value';
 
     end
-    
-    if strcmp(inverse_parameters.H.prior_distribution, 'log-uniform')
-        
-        inverse_parameters.H.sigHV_limits  = log2(inverse_parameters.H.sigHV_limits);
-        inverse_parameters.H.sigZJ0_limits = log2(inverse_parameters.H.sigZJ0_limits);
-
-    end
-                
+                    
     %so that different chains don't run the exact same monte carlo simulation.....
     rng(round(mod(chainind*now*1e12,1e3)))
 
@@ -48,17 +41,9 @@ function [ modelhist ] = run_search( HV, ZJ0, inverse_parameters, chainind, star
         count = count + 1;
         
         if count > 1
-            
-            if inverse_parameters.H.sig_style == 0
-            
-                disp([ 'Chain #' num2str(chainind) ' restarting initialization, attempt #' num2str(count) ]);
-            
-            elseif inverse_parameters.H.sig_style == 1
-               
-                disp([ 'Chain #' num2str(chainind) ' restarting initialization, attempt #' num2str(count) ]);
-                
-            end
-                
+                        
+            disp([ 'Chain #' num2str(chainind) ' restarting initialization, attempt #' num2str(count) ]);
+                            
         end
         
         if nargin == 4 || isempty(starting_model)
@@ -98,7 +83,7 @@ function [ modelhist ] = run_search( HV, ZJ0, inverse_parameters, chainind, star
                
                 disp(['Chain #' num2str(chainind) ' has started with a fit of '...
                     num2str(model.nfit) '; HV error of ' num2str(model.HV_error, 5) ...
-                    ' & ZJ0 error of ' num2str(model.ZJ0_error, 5) ]);
+                    ' & max ZJ0 error of ' num2str(model.ZJ0_error(end), 5) ]);
                 
             end
             
@@ -114,7 +99,7 @@ function [ modelhist ] = run_search( HV, ZJ0, inverse_parameters, chainind, star
             elseif strcmp(inverse_parameters.H.sig_style, 'uniform')
                
                 disp(['Chain #' num2str(chainind) ' on iteration ' num2str(j) ...
-                    ' with mean fit ' num2str(model.nfit) '; HV error of ' num2str(model.HV_error, 5) ' & ZJ0 error of ' num2str(model.ZJ0_error, 5)]);
+                    ' with mean fit ' num2str(model.nfit) '; HV error of ' num2str(model.HV_error, 5) ' & max ZJ0 error of ' num2str(model.ZJ0_error(end), 5)]);
                 
             end
             
@@ -156,19 +141,7 @@ function [ modelhist ] = run_search( HV, ZJ0, inverse_parameters, chainind, star
             return %its a garbage chain, and these garbage chains take FOREVER to finish
             
         end
-        
-        if inverse_parameters.delay_HV && model.disable_HV == 1 && model.ZJ0fit/length(model.ZJ0) < 1
-    
-            disp('Enabling HV data')
-            model.disable_HV = 0;
-            
-            %now corret the fit...
-            model.HVfit = sum(((model.HV - HV.value)./HV.error).^2);
-            model.fit   = (model.HVfit + model.ZJ0fit);
-            model.nfit  = model.fit/(length(model.HV) + length(model.ZJ0));
-            
-        end
-        
+                
         fit_hist(j) = model.nfit;
         nvs_hist(j) = length(model.vs.value);
         nvp_hist(j) = length(model.vpvs.value);

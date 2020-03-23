@@ -26,6 +26,10 @@ elseif strcmp(Parameters.file_type, 'miniseed')
     
     dataStruct = load_miniseed_data(Parameters);
     
+elseif strcmp(Parameters.file_type, 'IRIS')
+    
+    dataStruct = load_data_from_IRIS(Parameters);
+    
 end
 
 %%
