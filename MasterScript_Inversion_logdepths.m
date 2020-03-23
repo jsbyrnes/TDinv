@@ -34,9 +34,9 @@ ZJ0.frequency = nf;
 ZJ0.error     = 0.2*ones(size(ZJ0.value));
 
 %%
-%p = parpool;
+p = parpool;
 
-p.NumWorkers = 1;
+%p.NumWorkers = 1;
 
 %%%%%%%%%%%%%%%%
 %Modify this line if 
@@ -44,7 +44,7 @@ starting_m = [];
 
 for i = 1:(inverse_parameters.n_startingpoints/p.NumWorkers)
 
-    for k = 1:p.NumWorkers
+    parfor k = 1:p.NumWorkers
             
         modelhist{:, k} = run_search(ZR, ZJ0, inverse_parameters, k, starting_m);
 
