@@ -1,5 +1,5 @@
 function [ Z_data, h1_data, h2_data ] = irisFetch_call( sta_network, sta_name, sta_loc, ...
- channel_list, start_tmp, end_tmp, decimate_factor)
+ channel_list, start_tmp, end_tmp)
 %load_data_irisFetch 
 
     pause(1)

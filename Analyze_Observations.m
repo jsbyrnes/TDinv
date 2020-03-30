@@ -10,7 +10,7 @@ close all
 addpath('./Functions/')
 
 %%
-experiment_tag    = 'DiamondArray2';
+experiment_tag    = 'DiamondArray';
 radius_threshold  = 2;%m threshold for a "cluster" of radii to stack
 
 anisotropy = 1;
