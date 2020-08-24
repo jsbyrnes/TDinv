@@ -9,6 +9,7 @@ close all
 addpath('./Functions/');
 addpath('./wfTools/');
 addpath('./IPGP-sac-matlab-c67a67e');
+addpath('./IPGP-mseed-matlab-f7ff856');
 
 %%
 %%%%%%%%%%%
@@ -206,29 +207,3 @@ end
 
 save([ './Observations/ZR-' Parameters.run_name ], 'Parameters', 'R_mean', 'Z_mean', 'T_mean', 'time_start', 'baz_hits', ...
     'phaseshift', 'section_length', 'CZR');
-
-%%
-%     %now clip
-%     T0 = [ dataStruct(station_pairs(n,1)).T0(1) dataStruct(station_pairs(n,2)).T0(1) ];
-%     t1 = (((1:dataStruct(station_pairs(n,1)).sampleCount)/dataStruct(station_pairs(n,1)).sampleRate)/(24*60*60) + T0(1));
-%     t2 = (((1:dataStruct(station_pairs(n,2)).sampleCount)/dataStruct(station_pairs(n,2)).sampleRate)/(24*60*60) + T0(2));
-%         
-%     %figure out the overlap times and clip
-%     time_start = max( [ max(T0) Parameters.time_window(1) ]);
-%     time_end   = min( [ min([t1(end) t2(end)]) Parameters.time_window(2) ]);
-%     
-%     %pick the start point to align the data on
-%     [~, tind1] = min(abs(t1 - time_start));
-%     [~, tind2] = min(abs(t2 - time_start));
-%     [~, tend1] = min(abs(t1 - time_end));
-%     [~, tend2] = min(abs(t2 - time_end));
-%     
-%     if (tend1 - tind1 + 1) == (tend2 - tind2)
-%         
-%         tend2 = tend2 - 1;
-%         
-%     elseif (tend1 - tind1) == (tend2 - tind2 + 1)
-%     
-%         tend1 = tend1 - 1;
-%         
-%     end
