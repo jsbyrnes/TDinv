@@ -7,7 +7,6 @@ function [ C, C_error ] = SPAC( data1, data2, sample_rate, segment_length, Param
         n_inc     = floor(length(data1)/(segment_length*sample_rate/Parameters.freq_range(i))) - 1;
         n_samples = floor(segment_length*sample_rate/Parameters.freq_range(i));
                 
-        
         if strcmp(Parameters.filter_type, 'Butterworth')
         
             data1_seg = data1(1:n_samples);
@@ -45,8 +44,11 @@ function [ C, C_error ] = SPAC( data1, data2, sample_rate, segment_length, Param
                 
             end
             
-            taper = ones(size(seg));%tukeywin(n_samples, 1);
-                     
+            x = 1:length(seg1);
+            x = x - mean(x);
+            taper = exp(-(x.^2)/(2*(0.061*length(seg1)^2)));
+            taper = taper/max(taper);
+            
             if strcmp(Parameters.filter_type, 'Butterworth')
 
                 seg1 = butterworthfilt(seg1.*taper,1/sample_rate, ...
