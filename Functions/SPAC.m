@@ -45,7 +45,7 @@ function [ C, C_error ] = SPAC( data1, data2, sample_rate, segment_length, Param
                 
             end
             
-            taper = tukeywin(n_samples, 1);
+            taper = ones(size(seg));%tukeywin(n_samples, 1);
                      
             if strcmp(Parameters.filter_type, 'Butterworth')
 
