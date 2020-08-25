@@ -2,6 +2,8 @@ function [ modelhist ] = run_search( HV, ZJ0, inverse_parameters, chainind, star
 %Does the search
 %HVhist and ZJhist will be updated if and when the code becomes hierarchical
 
+    rng(chainind*mod(round(now*1e12), 1e4))
+
     if inverse_parameters.log_depths
 
         inverse_parameters.depth = log2(inverse_parameters.depth);
@@ -48,7 +50,7 @@ function [ modelhist ] = run_search( HV, ZJ0, inverse_parameters, chainind, star
         
         if nargin == 4 || isempty(starting_model)
         
-            model = build_startingpoints(inverse_parameters);
+            model = build_startingpoints(inverse_parameters, HV.error, ZJ0.error);
             
         elseif nargin == 5
             

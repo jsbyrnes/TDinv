@@ -17,22 +17,20 @@ inverse_parameters = define_search;
 %%%%%%
 %load the HV ratios and velocities to invert
 %The code does not currently handle any components other than single model ZJ0
-[ZR, ZJ0] = load_data(inverse_parameters);
-ZJ0 = ZJ0(1);
+%[ZR, ZJ0] = load_data(inverse_parameters);
 
-nf = 2.^(linspace(log2(0.5), log2(40), 30)); 
+[ZR, ZJ0, model] = syn_data_buriedlayer(inverse_parameters);
 
-ZR.value     = interp1(ZR.frequency, ZR.value, nf, 'linear', 'extrap');
-ZR.frequency = nf;
+%ZR.value     = interp1(ZR.frequency, ZR.value, nf, 'linear', 'extrap');
+%ZR.frequency = nf;
 ZR.error     = 0.2*ones(size(ZR.error));
 
-ZJ0.value     = interp1(ZJ0.frequency, ZJ0.value, nf, 'linear', 'extrap');
-ZJ0.frequency = nf;
+%ZJ0.value     = interp1(ZJ0.frequency, ZJ0.value, nf, 'linear', 'extrap');
+%ZJ0.frequency = nf;
 ZJ0.error     = 0.2*ones(size(ZJ0.value));
 
 %%
 p = parpool;
-
 %p.NumWorkers = 1;
 
 %%%%%%%%%%%%%%%%

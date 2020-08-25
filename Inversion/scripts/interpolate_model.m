@@ -2,7 +2,7 @@ function [ model ] = interpolate_model( model, inverse_parameters )
 
     if inverse_parameters.log_depths
     
-        model.interp.z    = 2.^(linspace(0, inverse_parameters.depth, inverse_parameters.nz));
+        model.interp.z    = 2.^(linspace(0, log2(inverse_parameters.depth), inverse_parameters.nz));
         model.vs.z        = 2.^(model.vs.z);
         model.vpvs.z      = 2.^(model.vpvs.z);
         

@@ -11,7 +11,7 @@ function [ model ] = build_startingpoints( inverse_parameters, HV_error, PVr_err
                 
     model.vs.value     = (diff(inverse_parameters.limits.vs)   * rand(model.vs.n, 1) + inverse_parameters.limits.vs(1));
     model.vpvs.value   = (diff(inverse_parameters.limits.vpvs) * rand(model.vpvs.n, 1)  + inverse_parameters.limits.vpvs(1));
-
+    
     %put the fastest at the bottom for both vs AND vp
     [~, ind]            = max(model.vs.value);
     tmp                 = model.vs.value(end);
@@ -22,7 +22,17 @@ function [ model ] = build_startingpoints( inverse_parameters, HV_error, PVr_err
     tmp                   = model.vpvs.value(end);
     model.vpvs.value(end) = model.vpvs.value(ind);
     model.vpvs.value(ind) = tmp;
-                                
+
+    if inverse_parameters.fixed_halfspace.flag
+
+        model.vs.z(1)   = inverse_parameters.depth;
+        model.vpvs.z(1) = inverse_parameters.depth;
+        
+        model.vs.value(1)     = inverse_parameters.fixed_halfspace.vs;
+        model.vpvs.value(1)   = inverse_parameters.fixed_halfspace.vpvs;
+        
+    end 
+    
     if strcmp(inverse_parameters.H.sig_style, 'fixed')
         
         model.HV_error  = HV_error;

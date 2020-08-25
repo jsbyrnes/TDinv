@@ -144,7 +144,7 @@ function dataStruct = load_miniseed_data(Parameters)
             dataStruct(k).data{3} = d2;
 
             dataStruct(k).sampleCount = length(dZ);
-            dataStruct(k).T0          = tZ;
+            dataStruct(k).T0{1}       = tZ;
 
         end
 

@@ -3,32 +3,36 @@ function [Parameters] = define_parameters( )
     Parameters.run_name        = 'Cavola';
 
     %directory for sac files
-    Parameters.file_type       = 'IRIS';%SAC, miniseed, or IRIS (for iris fetch)
-    Parameters.data_directory  = 'C:\Users\Joseph Byrnes\Dropbox\Landslide_data_forJoe\DiamondArray'; %I:\Data\IrishPark\SAC_Data\1000 '.\IrishParkData\' I:\Data\IrishPark\SAC_Data\1000_resp  C:\Users\Joseph Byrnes\Dropbox\Landslide_data_forJoe\Collected_short  I:\Data\IrishPark\SAC_Data\1000   C:\Users\Joseph Byrnes\Dropbox\Landslide_data_forJoe\DiamondArray L:\UMN\2001  
-    Parameters.channels        = { 'HHZ' 'HHN' 'HHE' };%make it Z first then north equiv, then east equiv 
-    Parameters.sign            = [ -1  1   1   ];%nodes have positive down for z
+    Parameters.file_type       = 'SAC';%SAC, miniseed, or IRIS (for iris fetch)
+    Parameters.data_directory  = 'I:\Data\IrishPark\SAC_Data\4000'; %I:\Data\IrishPark\SAC_Data\1000 '.\IrishParkData\' I:\Data\IrishPark\SAC_Data\1000_resp  C:\Users\Joseph Byrnes\Dropbox\Landslide_data_forJoe\Collected_short  I:\Data\IrishPark\SAC_Data\1000   C:\Users\Joseph Byrnes\Dropbox\Landslide_data_forJoe\DiamondArray L:\UMN\2001  
+    Parameters.channels        = { 'Z' 'N' 'E' };%make it Z first then north equiv, then east equiv 
+    Parameters.sign            = [ 1   1   1 ];%nodes have positive down for z
     Parameters.correlations    = { 'ZZ' }; %, 'RR', 'TT', 'ZR', 'ZT', 'RT'
     
-    %Parameters.time_window      = [ 737032.737110185 737032.759287269 ];%in datenum. Use [ -Inf Inf ] for all data
-    Parameters.time_window       = [ datenum('2004-09-01 00:00:00') datenum('2004-09-03 00:00:00') ];%[ 736497.546082949 736497.80046083 ];
-    Parameters.download_sections = 1/24; %inc for download
-    Parameters.downsample        = 5;%Will downsample to central_f*Parameters.downsample for ZR
-    Parameters.bootstrap_samples = 1e4;%make it large if the dataset is small and vice versa
-    
+    Parameters.time_window      = [ -Inf Inf ];%in datenum. Use [ -Inf Inf ] for all data
+    %Parameters.time_window       = [ datenum('2004-09-18 12:00:00') datenum('2004-09-18 12:15:00') ];%[ 736497.546082949 736497.80046083 ];
+    Parameters.download_sections = 15/60/24; %inc for download
+    Parameters.resample_to       = 100;%in Hz
+    Parameters.bootstrap_samples = 1e2;%make it large if the dataset is small and vice versa
+        
     %%%%%%%%
     %parameters only used with IRIS fetch
-    Parameters.stations = { 'CAG5' 'CAG4' 'CAG3' 'CAF5' 'CAF4' 'CAF3' 'CAH5' 'CAH4' 'CAH3'};
-    Parameters.network  = { 'YB' };%can only enter one right now
-    Parameters.location = { '*' };
+    
+%     stations = irisFetch.Stations('STATION', '*', '*', '*', '*', ...
+%         'boxcoordinates', [ 33 38 -121 -114], 'StartBefore', datestr(Parameters.time_window(1), 31), 'EndAfter', datestr(Parameters.time_window(2), 31));
+    
+%     Parameters.station  = { 'CAG5' 'CAG4' 'CAG3' 'CAF5' 'CAF4' 'CAF3' 'CAH5' 'CAH4' 'CAH3'};%{ stations.StationCode }; %
+%     Parameters.network  = { 'YB'   'YB'   'YB'   'YB'   'YB'   'YB'   'YB'   'YB'   'YB'};%can only enter one right now
+%     Parameters.location = { '*' };
     
     %%%%%%%%%
     %for spac
-    Parameters.normalize        = 0;
+    Parameters.normalize        = 1;
     Parameters.make_complex     = 0;
     Parameters.integrate        = 0;
     Parameters.onebit           = 0;
-    Parameters.freq_range       = exp(linspace(log(1), log(50), 25));
-    Parameters.df               = 0.01*ones(size(Parameters.freq_range));
+    Parameters.freq_range       = [1 50];
+    Parameters.df               = Parameters.freq_range/100; %0.01*ones(size(Parameters.freq_range));
     Parameters.segment_length   = 50;
     Parameters.filter_type      = 'Gaussian';%Gaussian or Butterworth. Gaussian much faster
     Parameters.time_cull        = 'EndPoints'; %Normally 'EndPoints'. Need 'Intersection' for irish park because of a clock issue
@@ -37,13 +41,39 @@ function [Parameters] = define_parameters( )
     %for ZR ratios
     %parameters to control the search for rayleigh waves.
     Parameters.baz_step           = 1; %when testing for a rayleigh wave, the code looks at test back azimuths, searching with this increment.
-    Parameters.central_f          = 1./(5:5:50); %central frequencies to look at. In Hz.
-    Parameters.halfwidth          = 0.01*ones(size(Parameters.central_f));%half width of the Gaussian filter in Hz
+    Parameters.central_f          = logspace(log10(15), log10(20), 20); %central frequencies to look at. In Hz.
+    Parameters.halfwidth          = 0.05*Parameters.central_f;%0.01*ones(size(Parameters.central_f));%half width of the Gaussian filter in Hz
     Parameters.phase_range        = 10; %90 degrees +/- this phase shift to for a Rayleigh wave
     Parameters.TR_max             = 5; %maximum ratio of transverse to radial energy for the test back azimuth. If the transverse is huge the rayleigh wave might not be very good. The results are not very sensitive to this threshold.
     Parameters.hitlength_cycles   = 3;
     Parameters.max_hits           = Inf;
     Parameters.sections           = 1;
+    
+    %%%%%%%%%%%%
+    %For SC
+    Parameters.window_length = 60;
+    Parameters.onebit        = 1;
+    Parameters.nsmooth       = 1000;
+    Parameters.low           = 1;
+    Parameters.high          = 500;
+    Parameters.time_keep     = 0.5;
+    
+    %%%%%%%%%%%%%
+    %for wavedec
+    Parameters.section_length    = 30;%in cycles
+    Parameters.IC                = 'BIC';
+    Parameters.maxwaves          = 30;
+    Parameters.max_velocity      = 0.2;
+    Parameters.iter              = 3;
+    Parameters.writeOn           = 5;
+    Parameters.taper             = 0;
+    Parameters.stalllimit        = 20;
+    Parameters.batch             = 10;
+    
+    Parameters.limits.kappa      = [ 1/1500 1/50 ];%m/s
+    Parameters.limits.phi        = [-pi pi];
+    Parameters.limits.psi        = [-pi pi];
+    Parameters.limits.xi         = [-pi pi];
     
 end
 

@@ -10,10 +10,10 @@ close all
 addpath('./Functions/')
 
 %%
-experiment_tag    = 'DiamondArray';
+experiment_tag    = 'IP3000';
 radius_threshold  = 2;%m threshold for a "cluster" of radii to stack
 
-anisotropy = 1;
+anisotropy = 0;
 nbtsp      = 50;
 %%
 load(['./Observations/SPAC-' experiment_tag ]);
@@ -64,33 +64,19 @@ end
 
 load(['./Observations/ZR-' experiment_tag ]);
 
-clear ZR
-
 figure(length(Parameters.correlations) + 1)
-hold on
 xlabel('Frequency, Hz');
 ylabel('ZR(f)');
 
-[m,n] = size(R_mean);
-
-for k = 1:m
+for k = 1:length(ZR)
         
-    for kk = 1:n
-        
-        ZR(k).value(kk) = exp(mean(log((Z_mean{k, kk}./R_mean{k, kk}))));%exp(mean(log(Z_mean{k, kk}./R_mean{k, kk})));
-        
-    end
+    ZR(k).value = (ZR(k).value);
     
     ZR(k).frequency = Parameters.central_f;
-    plot(ZR(k).frequency, ZR(k).value, 'o')
-
+    semilogx(ZR(k).frequency, ZR(k).value, 'o')
+    hold on
+    
 end
-
-plot(Parameters.central_f, median(reshape([ZR.value], size(R_mean')), 2), 'k')
-
-ZR(1).value = median(reshape([ZR.value], size(R_mean')), 2)';
-
-ZR = ZR(1);
 
 save(['./Observations/ZR-' experiment_tag ], 'ZR', '-append');
 

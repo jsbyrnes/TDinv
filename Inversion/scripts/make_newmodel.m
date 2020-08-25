@@ -114,8 +114,8 @@ function [ model, alpha ] = make_newmodel( model, inverse_parameters, HV, ZJ0 )
 
                 end
 
-                [ modelN.(mode).z, ind] = sort(modelN.(mode).z);
-                modelN.(mode).value     = modelN.(mode).value(ind);
+                %[ modelN.(mode).z, ind] = sort(modelN.(mode).z);
+                %modelN.(mode).value     = modelN.(mode).value(ind);
 
                 if modelN.valid
                 
@@ -162,7 +162,16 @@ function [ model, alpha ] = make_newmodel( model, inverse_parameters, HV, ZJ0 )
                 modelN       = model; %will loop, and don't want to build up pert
                 modelN.valid = 1;
                 
-                kill                      = randi(modelN.(mode).n, 1);
+                if ~inverse_parameters.fixed_halfspace.flag
+                
+                    kill                      = randi(modelN.(mode).n, 1);
+                    
+                else
+                   
+                    kill                      = randi([ 2 modelN.(mode).n ], 1);
+                    
+                end
+                    
                 modelN.(mode).z(kill)     = [];
                 modelN.(mode).value(kill) = [];
                 modelN.(mode).n           = modelN.(mode).n - 1;
@@ -185,8 +194,8 @@ function [ model, alpha ] = make_newmodel( model, inverse_parameters, HV, ZJ0 )
 
                 end
 
-                [ modelN.(mode).z, ind] = sort(modelN.(mode).z);
-                modelN.(mode).value     = modelN.(mode).value(ind);
+                %[ modelN.(mode).z, ind] = sort(modelN.(mode).z);
+                %modelN.(mode).value     = modelN.(mode).value(ind);
 
                 if modelN.valid
                 
@@ -232,7 +241,15 @@ function [ model, alpha ] = make_newmodel( model, inverse_parameters, HV, ZJ0 )
                 modelN       = model; %will loop, and don't want to build up pert
                 modelN.valid = 1;
 
-                change = randi(modelN.(mode).n, 1);
+                if ~inverse_parameters.fixed_halfspace.flag
+
+                    change = randi(modelN.(mode).n, 1);
+                    
+                else
+                   
+                    change = randi([ 2 modelN.(mode).n ], 1);
+                    
+                end
                 
                 modelN.(mode).value(change)   = normrnd(modelN.(mode).value(change), sig);
                 
@@ -242,8 +259,8 @@ function [ model, alpha ] = make_newmodel( model, inverse_parameters, HV, ZJ0 )
                     
                 end
                 
-                [ modelN.(mode).z, ind] = sort(modelN.(mode).z);
-                modelN.(mode).value     = modelN.(mode).value(ind);
+                %[ modelN.(mode).z, ind] = sort(modelN.(mode).z);
+                %modelN.(mode).value     = modelN.(mode).value(ind);
 
                 if modelN.valid
                 
@@ -279,8 +296,16 @@ function [ model, alpha ] = make_newmodel( model, inverse_parameters, HV, ZJ0 )
                     modelN2       = modelN; %will loop, and don't want to build up pert
                     modelN2.valid = 1;
 
-                    change2 = randi(modelN2.(mode).n, 1);
+                    if ~inverse_parameters.fixed_halfspace.flag
 
+                        change2 = randi(modelN2.(mode).n, 1);
+
+                    else
+
+                        change2 = randi([ 2 modelN2.(mode).n ], 1);
+
+                    end
+                    
                     modelN2.(mode).value(change2)   = normrnd(modelN.(mode).value(change2), sig/5);
 
                     if modelN2.(mode).value(change2) < inverse_parameters.limits.(mode)(1) || modelN2.(mode).value(change2) > inverse_parameters.limits.(mode)(2)
@@ -289,8 +314,8 @@ function [ model, alpha ] = make_newmodel( model, inverse_parameters, HV, ZJ0 )
 
                     end
 
-                    [ modelN2.(mode).z, ind] = sort(modelN2.(mode).z);
-                    modelN2.(mode).value     = modelN2.(mode).value(ind);
+                    %[ modelN2.(mode).z, ind] = sort(modelN2.(mode).z);
+                    %modelN2.(mode).value     = modelN2.(mode).value(ind);
 
                     if modelN2.valid
 
@@ -333,7 +358,16 @@ function [ model, alpha ] = make_newmodel( model, inverse_parameters, HV, ZJ0 )
                 modelN       = model; %will loop, and don't want to build up pert
                 modelN.valid = 1;
                 
-                move                  = randi(modelN.(mode).n, 1);
+                if ~inverse_parameters.fixed_halfspace.flag
+
+                    move = randi(modelN.(mode).n, 1);
+                    
+                else
+                   
+                    move = randi([ 2 modelN.(mode).n ], 1);
+                    
+                end
+                
                 pert                  = normrnd(0, sig);                
                 modelN.(mode).z(move) = modelN.(mode).z(move) + pert;
 
@@ -343,8 +377,8 @@ function [ model, alpha ] = make_newmodel( model, inverse_parameters, HV, ZJ0 )
 
                 end
 
-                [ modelN.(mode).z, ind] = sort(modelN.(mode).z);
-                modelN.(mode).value     = modelN.(mode).value(ind);
+                %[ modelN.(mode).z, ind] = sort(modelN.(mode).z);
+                %modelN.(mode).value     = modelN.(mode).value(ind);
 
                 if modelN.valid
                 
@@ -380,7 +414,15 @@ function [ model, alpha ] = make_newmodel( model, inverse_parameters, HV, ZJ0 )
                     modelN2       = modelN; %will loop, and don't want to build up pert
                     modelN2.valid = 1;
 
-                    move2 = randi(modelN2.(mode).n, 1);
+                    if ~inverse_parameters.fixed_halfspace.flag
+
+                        move2 = randi(modelN2.(mode).n, 1);
+
+                    else
+
+                        move2 = randi([ 2 modelN2.(mode).n ], 1);
+
+                    end
 
                     modelN2.(mode).z(move2)   = normrnd(modelN.(mode).z(move2), sig/5);
 
@@ -390,8 +432,8 @@ function [ model, alpha ] = make_newmodel( model, inverse_parameters, HV, ZJ0 )
 
                     end
 
-                    [ modelN2.(mode).z, ind] = sort(modelN2.(mode).z);
-                    modelN2.(mode).value     = modelN2.(mode).value(ind);
+                    %[ modelN2.(mode).z, ind] = sort(modelN2.(mode).z);
+                    %modelN2.(mode).value     = modelN2.(mode).value(ind);
 
                     if modelN2.valid
 
@@ -431,51 +473,30 @@ function [ model, alpha ] = make_newmodel( model, inverse_parameters, HV, ZJ0 )
             
             r = log(rand(1));
             
-            if strcmp(inverse_parameters.H.sig_style, 'uniform')
+            if isempty(ZJ0.frequency)
+
+                choose = 1;
+
+            elseif isempty(HV.frequency)
+
+                choose = 2;
+
+            else
+
+                choose = randi(2, 1);
+
+            end
+
+            if strcmp(inverse_parameters.H.sig_style, 'invert')
 
                 HV_error    = model.HV_error*ones(size(HV.value));
-                ZJ0_error   = model.ZJ0_error*ones(size(ZJ0.value));
-                
-                choose = randi(2, 1);
-                
+                ZJ0_error   = linspace(model.ZJ0_error(1), model.ZJ0_error(2), length(ZJ0.value));
+                                
                 if choose == 1
                    
                     modelN.HV_error = normrnd(modelN.HV_error, inverse_parameters.H.sigHV);
 
                     if modelN.HV_error < inverse_parameters.H.sigHV_limits(1) || modelN.HV_error > inverse_parameters.H.sigHV_limits(2)
-                       
-                        r = Inf;
-                        
-                    end
-                    
-                elseif choose == 2
-                    
-                    modelN.ZJ0_error = normrnd(modelN.ZJ0_error, inverse_parameters.H.sigZJ0);
-                    
-                    if modelN.ZJ0_error < inverse_parameters.H.sigZJ0_limits(1) || modelN.ZJ0_error > inverse_parameters.H.sigZJ0_limits(2)
-                       
-                        r = Inf;
-                        
-                    end
-                    
-                end
-                
-                HV_errorN   = modelN.HV_error*ones(size(HV.value));
-                ZJ0_errorN  = modelN.ZJ0_error*ones(size(ZJ0.value));
-                
-            elseif strcmp(inverse_parameters.H.sig_style, 'linear')
-
-                HV_error    = linspace(model.HV_error(1), model.HV_error(2), length(HV.value));
-                ZJ0_error   = linspace(model.ZJ0_error(1), model.ZJ0_error(2), length(ZJ0.value));
-            
-                choose = randi(2, 1);
-                
-                if choose == 1
-                   
-                    choose = randi(2, 1);
-                    modelN.HV_error(choose) = normrnd(modelN.HV_error(choose), inverse_parameters.H.sigHV);
-                    
-                    if modelN.HV_error(choose) < inverse_parameters.H.sigHV_limits(1) || modelN.HV_error(choose) > inverse_parameters.H.sigHV_limits(2)
                        
                         r = Inf;
                         
@@ -494,24 +515,54 @@ function [ model, alpha ] = make_newmodel( model, inverse_parameters, HV, ZJ0 )
                     
                 end
                 
-                HV_errorN   = linspace(modelN.HV_error(1), modelN.HV_error(2), length(HV.value));
-                ZJ0_errorN  = linspace(modelN.ZJ0_error(1), modelN.ZJ0_error(2), length(ZJ0.value));
-                
+                HV_errorN   = modelN.HV_error*ones(size(HV.value));
+                ZJ0_errorN  = linspace(model.ZJ0_error(1), model.ZJ0_error(2), length(ZJ0.value));
+
             end
             
-            %get fits without running mat_disp, makes this a free step
-            modelN.ZJ0fit = sum(((modelN.ZJ0 - ZJ0.value)./ZJ0_errorN).^2);
-            modelN.HVfit  = sum(((modelN.HV - HV.value)./HV_errorN).^2);
-            modelN.fit    = modelN.ZJ0fit + modelN.HVfit;
-            modelN.nfit   = modelN.fit/(length(HV.value) + length(ZJ0.value));
-            modelN.llh    = -0.5*(log(2*pi)*(length(modelN.HV) + length(modelN.ZJ0)) + ...
-                sum(log(HV_errorN)) + sum(log(ZJ0_errorN)) - modelN.fit);
-            %uncorrelated errors, so the determinent is just the product of
-            %the trace, here as a log
-            detold = sum(log(HV_error))  + sum(log(ZJ0_error));
-            detnew = sum(log(HV_errorN)) + sum(log(ZJ0_errorN));
+            if ~isempty(ZJ0.frequency) && ~isempty(HV.frequency)
             
-            alpha = min([ 0 (detold - detnew - (modelN.fit - model.fit)/2)]); 
+                %get fits without running mat_disp, makes this a free step
+                modelN.ZJ0fit = sum(((modelN.ZJ0 - ZJ0.value)./ZJ0_errorN).^2);
+                modelN.HVfit  = sum(((modelN.HV - HV.value)./HV_errorN).^2);
+                modelN.fit    = modelN.ZJ0fit + modelN.HVfit;
+                modelN.nfit   = modelN.fit/(length(HV.value) + length(ZJ0.value));
+                modelN.llh    = -0.5*(log(2*pi)*(length(modelN.HV) + length(modelN.ZJ0)) + ...
+                    sum(log(HV_errorN)) + sum(log(ZJ0_errorN)) - modelN.fit);
+                %uncorrelated errors, so the determinent is just the product of
+                %the trace, here as a log
+                detold = sum(log(HV_error))  + sum(log(ZJ0_error));
+                detnew = sum(log(HV_errorN)) + sum(log(ZJ0_errorN));
+            
+            elseif isempty(ZJ0.frequency)
+                
+                %get fits without running mat_disp, makes this a free step
+                modelN.HVfit  = sum(((modelN.HV - HV.value)./HV_errorN).^2);
+                modelN.fit    = modelN.HVfit;
+                modelN.nfit   = modelN.fit/(length(HV.value));
+                modelN.llh    = -0.5*(log(2*pi)*(length(modelN.HV)) + ...
+                    sum(log(HV_errorN)) - modelN.fit);
+                %uncorrelated errors, so the determinent is just the product of
+                %the trace, here as a log
+                detold = sum(log(HV_error));
+                detnew = sum(log(HV_errorN));
+                
+            elseif isempty(HV.frequency)
+                
+                %get fits without running mat_disp, makes this a free step
+                modelN.ZJ0fit = sum(((modelN.ZJ0 - ZJ0.value)./ZJ0_errorN).^2);
+                modelN.fit    = modelN.ZJ0fit;
+                modelN.nfit   = modelN.fit/(length(ZJ0.value));
+                modelN.llh    = -0.5*(log(2*pi)*(length(modelN.ZJ0)) + ...
+                    sum(log(ZJ0_errorN)) - modelN.fit);
+                %uncorrelated errors, so the determinent is just the product of
+                %the trace, here as a log
+                detold = sum(log(ZJ0_error));
+                detnew = sum(log(ZJ0_errorN));
+                
+            end
+                
+            alpha = min([ 0 (2*(detold - detnew) - (modelN.fit - model.fit)/2)]);%2 not in the previous sums
             
             if r <= alpha
                 

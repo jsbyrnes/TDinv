@@ -3,21 +3,36 @@ function [dataStruct] = load_data_from_IRIS(Parameters)
     dataStruct.station = [];
     
     %get loop for section of time
-    sections = Parameters.time_window(1):Parameters.download_sections:(Parameters.time_window(2) - Parameters.sections);
+    sections = Parameters.time_window(1):Parameters.download_sections:(Parameters.time_window(2) - Parameters.download_sections);
     dataStruct.sections = sections;
     
-    for k = 1:length(Parameters.stations)
+    for k = 1:length(Parameters.station)
         
         for j = 1:length(sections)
         
-            [z, h1, h2] = irisFetch_call(Parameters.network{1}, Parameters.stations{k}, ...
+            [z, h1, h2] = irisFetch_call(Parameters.network{k}, Parameters.station{k}, ...
                 Parameters.location, Parameters.channels, datestr(sections(j), 31), ...
                 datestr(sections(j) + Parameters.download_sections, 31));
 
             if isempty(z) || isempty(h1) || isempty(h2)
 
-                disp(['No data loaded for ' Parameters.station(k) ]);
-
+                
+                if j == 1
+                    
+                    disp(['Data missing for station ' Parameters.station{k} ', network ' Parameters.network{k}]);
+                    break%probably nothing at this station, not a perfect fix
+                
+                else
+                    
+                    disp(['No data loaded for a section at station ' Parameters.station{k} ', network ' Parameters.network{k}]);
+                    continue
+                    
+                end
+                
+            else
+                
+                disp(['Got data for ' datestr(sections(j), 31) ' at station ' Parameters.station{k} ', network ' Parameters.network{k}]);
+                
             end
 
             if ~any(strcmp({dataStruct.station}, z.station))
@@ -41,6 +56,7 @@ function [dataStruct] = load_data_from_IRIS(Parameters)
             %extract common fields
             dataStruct(index).sampleRate     = round(z.sampleRate);
             dataStruct(index).station        = z.station;
+            dataStruct(index).network        = Parameters.network{k};
             dataStruct(index).latitude       = z.latitude;
             dataStruct(index).longitude      = z.longitude;
             dataStruct(index).T0{j}          = sections(j) + ((0:(length(z.data) - 1))...
