@@ -3,9 +3,9 @@ function [Parameters] = define_parameters( )
     Parameters.run_name        = 'Cavola';
 
     %directory for sac files
-    Parameters.file_type       = 'SAC';%SAC, miniseed, or IRIS (for iris fetch)
-    Parameters.data_directory  = 'I:\Data\IrishPark\SAC_Data\4000'; %I:\Data\IrishPark\SAC_Data\1000 '.\IrishParkData\' I:\Data\IrishPark\SAC_Data\1000_resp  C:\Users\Joseph Byrnes\Dropbox\Landslide_data_forJoe\Collected_short  I:\Data\IrishPark\SAC_Data\1000   C:\Users\Joseph Byrnes\Dropbox\Landslide_data_forJoe\DiamondArray L:\UMN\2001  
-    Parameters.channels        = { 'Z' 'N' 'E' };%make it Z first then north equiv, then east equiv 
+    Parameters.file_type       = 'miniseed';%SAC, miniseed, or IRIS (for iris fetch)
+    Parameters.data_directory  = '.\IrishParkData\'; %I:\Data\IrishPark\SAC_Data\1000 '.\IrishParkData\' I:\Data\IrishPark\SAC_Data\1000_resp  C:\Users\Joseph Byrnes\Dropbox\Landslide_data_forJoe\Collected_short  I:\Data\IrishPark\SAC_Data\1000   C:\Users\Joseph Byrnes\Dropbox\Landslide_data_forJoe\DiamondArray L:\UMN\2001  
+    Parameters.channels        = { 'HHZ' 'HHX' 'HHY' };%make it Z first then north equiv, then east equiv 
     Parameters.sign            = [ 1   1   1 ];%nodes have positive down for z
     Parameters.correlations    = { 'ZZ' }; %, 'RR', 'TT', 'ZR', 'ZT', 'RT'
     

@@ -55,7 +55,8 @@ for n = 1:npairs
     r(n)   = 10/(111.12*1000);
     azi(n) = 0;
     
-    C = zeros(length(npairs), 3, length(Parameters.freq_range));
+    C       = zeros(length(npairs), 3, length(Parameters.freq_range));
+    C_error = zeros(length(npairs), 3, length(Parameters.freq_range));
     
     for s = 1:length(Parameters.sections)
 
