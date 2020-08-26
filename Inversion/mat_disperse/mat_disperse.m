@@ -105,10 +105,10 @@ global NUMPOINTS; NUMPOINTS = 500;%500 default
 global LAMBDA; LAMBDA = 6;%6 default
 
 % Convert all input parameters to column vectors
-thk = reshape(thk,length(thk),1);
-dns = reshape(dns,length(dns),1);
-cvp = reshape(cvp,length(cvp),1);
-cvs = reshape(cvs,length(cvs),1);
+thk  = reshape(thk,length(thk),1);
+dns  = reshape(dns,length(dns),1);
+cvp  = reshape(cvp,length(cvp),1);
+cvs  = reshape(cvs,length(cvs),1);
 freq = reshape(freq,length(freq),1);
 
 % Determine the minimum and maximum body wave velocities

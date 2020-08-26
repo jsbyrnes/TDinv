@@ -1,18 +1,18 @@
 function [ C, C_error ] = SPAC( data1, data2, sample_rate, segment_length, Parameters)
 %data should be iris fetch structures from just two stations. 
 
-    for i = 1:(length(Parameters.freq_range))
+    for i = 1:(length(Parameters.spac_freq))
                                              
         %50% overlap
-        n_inc     = floor(length(data1)/(segment_length*sample_rate/Parameters.freq_range(i))) - 1;
-        n_samples = floor(segment_length*sample_rate/Parameters.freq_range(i));
+        n_inc     = floor(length(data1)/(segment_length*sample_rate/Parameters.spac_freq(i))) - 1;
+        n_samples = floor(segment_length*sample_rate/Parameters.spac_freq(i));
                 
         if strcmp(Parameters.filter_type, 'Butterworth')
         
             data1_seg = data1(1:n_samples);
             
             [~, SOS, G] = butterworthfilt(data1_seg, 1/sample_rate, ...
-                Parameters.freq_range(i) - Parameters.df(i)/2, Parameters.freq_range(i) + Parameters.df(i)/2);
+                Parameters.spac_freq(i) - Parameters.df(i)/2, Parameters.spac_freq(i) + Parameters.df(i)/2);
             
         elseif strcmp(Parameters.filter_type, 'Gaussian')
                         
@@ -23,7 +23,7 @@ function [ C, C_error ] = SPAC( data1, data2, sample_rate, segment_length, Param
             end
             
             data1_seg = data1(1:n_samples);            
-            Gfilter = (Gfilt(Parameters.freq_range(i), Parameters.df(i), length(data1_seg), sample_rate));
+            Gfilter = (Gfilt(Parameters.spac_freq(i), Parameters.df(i), length(data1_seg), sample_rate));
                         
         end
         
@@ -44,7 +44,7 @@ function [ C, C_error ] = SPAC( data1, data2, sample_rate, segment_length, Param
                 
             end
             
-            x = 1:length(seg1);
+            x = cumsum(ones(size(seg1)));
             x = x - mean(x);
             taper = exp(-(x.^2)/(2*(0.061*length(seg1)^2)));
             taper = taper/max(taper);
@@ -52,9 +52,9 @@ function [ C, C_error ] = SPAC( data1, data2, sample_rate, segment_length, Param
             if strcmp(Parameters.filter_type, 'Butterworth')
 
                 seg1 = butterworthfilt(seg1.*taper,1/sample_rate, ...
-                    Parameters.freq_range(i) - Parameters.df(i)/2, Parameters.freq_range(i) + Parameters.df(i)/2, SOS, G);
+                    Parameters.spac_freq(i) - Parameters.df(i)/2, Parameters.spac_freq(i) + Parameters.df(i)/2, SOS, G);
                 seg2 = butterworthfilt(seg2.*taper,1/sample_rate, ...
-                    Parameters.freq_range(i) - Parameters.df(i)/2, Parameters.freq_range(i) + Parameters.df(i)/2, SOS, G);
+                    Parameters.spac_freq(i) - Parameters.df(i)/2, Parameters.spac_freq(i) + Parameters.df(i)/2, SOS, G);
 
             elseif strcmp(Parameters.filter_type, 'Gaussian')
 

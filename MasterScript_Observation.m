@@ -70,11 +70,11 @@ for n = 1:npairs
 
         elseif strcmp(Parameters.time_cull, 'EndPoints')
 
-            time_start = max([ T01(1)   T02(1)   ]);
-            time_end   = min([ T01(end) T02(end) ]);
+            time_s = max([ T01(1)   T02(1)   ]);
+            time_e   = min([ T01(end) T02(end) ]);
 
-            i1 = (T01 > time_start) & (T01 < time_end);
-            i2 = (T02 > time_start) & (T02 < time_end);
+            i1 = (T01 > time_s) & (T01 < time_e);
+            i2 = (T02 > time_s) & (T02 < time_e);
 
         end
         
@@ -183,7 +183,7 @@ C_error = C_error/length(dataStruct.sections);
 r = r*111.12*1000;%convert to m
 
 save([ './Observations/SPAC-' Parameters.run_name ], 'Parameters', 'C', 'C_error', 'r', 'azi');%'C_error',
-clear C C_error data1 data2 Ctmp C_errortmp index index1 index2 list r azi T0 time_end time_start tind1 tind2
+clear C C_error data1 data2 Ctmp C_errortmp index index1 index2 list r azi T0 time_e time_s tind1 tind2
 
 %%
 %%%%%%%%

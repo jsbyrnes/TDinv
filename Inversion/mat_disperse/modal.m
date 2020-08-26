@@ -43,19 +43,28 @@ function [ cr ] = modal(freq,thk,dns,cvp,cvs,crmin,crmax,varargin)
 
             % Establish the first and second points
             k1 = kmax;
-            f1 = secular(k1,om,thk,dns,cvp,cvs);
+            %%%
+            w = zeros(3, length(cvp));
+            w(3, :) = 1;
+            f1 = zzget(length(cvp) - 1,crmin,om, dns.*cvs.^2, zeros(size(cvp)), ...
+                dns.*cvp.^2, zeros(size(cvp)), zeros(size(cvp)), w, dns, thk, zeros(6,1));
+            %f1 = secular(k1,om,thk,dns,cvp,cvs);
             k2 = kmax - dk;
-            f2 = secular(k2,om,thk,dns,cvp,cvs);
-
+            %f2 = secular(k2,om,thk,dns,cvp,cvs);
+            f2 = zzget(length(cvp) - 1,om/k2,om, dns.*cvs.^2, zeros(size(cvp)), ...
+                dns.*cvp.^2, zeros(size(cvp)), zeros(size(cvp)), w, dns, thk, zeros(6,1));
+            
             % Establish an arbitrary high value for kold
             kold = 1.1*kmax;
 
-            %       kvec = kmin:dk:kmax;
-            %       for k = 1:length(kvec)
-            %
-            %           f(k) = secular(kvec(k),om,thk,dns,cvp,cvs);
-            %
-            %       end
+            kvec = linspace(kmin,kmax,100);
+            for k = 1:length(kvec)
+                
+                f1(k) = secular(kvec(k),om,thk,dns,cvp,cvs);
+                f2(k) = zzget(length(cvp) - 1,om/kvec(k),om, dns.*cvs.^2, zeros(size(cvp)), ...
+                dns.*cvp.^2, zeros(size(cvp)), zeros(size(cvp)), w, dns, thk, zeros(6,1));
+                
+            end
 
             % Loop through the remaining points
             for m = 2:NUMINC-1

@@ -4,15 +4,15 @@ function [Parameters] = define_parameters( )
 
     %directory for sac files
     Parameters.file_type       = 'miniseed';%SAC, miniseed, or IRIS (for iris fetch)
-    Parameters.data_directory  = '.\IrishParkData\'; %I:\Data\IrishPark\SAC_Data\1000 '.\IrishParkData\' I:\Data\IrishPark\SAC_Data\1000_resp  C:\Users\Joseph Byrnes\Dropbox\Landslide_data_forJoe\Collected_short  I:\Data\IrishPark\SAC_Data\1000   C:\Users\Joseph Byrnes\Dropbox\Landslide_data_forJoe\DiamondArray L:\UMN\2001  
-    Parameters.channels        = { 'HHZ' 'HHX' 'HHY' };%make it Z first then north equiv, then east equiv 
+    Parameters.data_directory  = '.\Alluvium\'; %I:\Data\IrishPark\SAC_Data\1000 '.\IrishParkData\' I:\Data\IrishPark\SAC_Data\1000_resp  C:\Users\Joseph Byrnes\Dropbox\Landslide_data_forJoe\Collected_short  I:\Data\IrishPark\SAC_Data\1000   C:\Users\Joseph Byrnes\Dropbox\Landslide_data_forJoe\DiamondArray L:\UMN\2001  
+    Parameters.channels        = { 'HHZ' 'HHN' 'HHE' };%make it Z first then north equiv, then east equiv 
     Parameters.sign            = [ 1   1   1 ];%nodes have positive down for z
     Parameters.correlations    = { 'ZZ' }; %, 'RR', 'TT', 'ZR', 'ZT', 'RT'
     
     Parameters.time_window      = [ -Inf Inf ];%in datenum. Use [ -Inf Inf ] for all data
     %Parameters.time_window       = [ datenum('2004-09-18 12:00:00') datenum('2004-09-18 12:15:00') ];%[ 736497.546082949 736497.80046083 ];
     Parameters.download_sections = 15/60/24; %inc for download
-    Parameters.resample_to       = 100;%in Hz
+    Parameters.downsample        = 5;%during ZR, factor of the central f
     Parameters.bootstrap_samples = 1e2;%make it large if the dataset is small and vice versa
         
     %%%%%%%%
@@ -31,9 +31,9 @@ function [Parameters] = define_parameters( )
     Parameters.make_complex     = 0;
     Parameters.integrate        = 0;
     Parameters.onebit           = 0;
-    Parameters.freq_range       = [1 50];
-    Parameters.df               = Parameters.freq_range/100; %0.01*ones(size(Parameters.freq_range));
-    Parameters.segment_length   = 50;
+    Parameters.spac_freq        = logspace(0, 1.33, 20);
+    Parameters.df               = Parameters.spac_freq/100; %0.01*ones(size(Parameters.freq_range));
+    Parameters.segment_length   = 50;%in cycles
     Parameters.filter_type      = 'Gaussian';%Gaussian or Butterworth. Gaussian much faster
     Parameters.time_cull        = 'EndPoints'; %Normally 'EndPoints'. Need 'Intersection' for irish park because of a clock issue
     

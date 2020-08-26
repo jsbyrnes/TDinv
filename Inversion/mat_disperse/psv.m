@@ -23,7 +23,7 @@ function [e11,e12,e21,e22,du,mu,nus,nup] = psv(thk,dns,cvp,cvs,om,k)
 
 cvs2 = cvs.^2; cvp2 = cvp.^2;
 mu =  complex(dns.*cvs2);
-nus = complex(zeros(41,1));
+nus = complex(zeros(41,1));%hardwired?
 nup = complex(zeros(41,1));
 
 e11 = complex(zeros(2,2,length(cvs)));

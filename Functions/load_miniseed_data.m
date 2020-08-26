@@ -82,9 +82,11 @@ function dataStruct = load_miniseed_data(Parameters)
 
             dataStruct(index).T0{chan_ind}  = cat(1,D.t);%assumed common for each channel
             
+            disp([ 'Data loaded for ' s{2} ' on component ' s{3} ]);
+            
         else
 
-            disp(['No data loaded for ' s{2} ' on component ' s{3} ]);
+            disp([ 'No data loaded for ' s{2} ' on component ' s{3} ]);
 
         end
 
