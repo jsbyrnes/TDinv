@@ -5,8 +5,16 @@ function dataStruct = load_miniseed_data(Parameters)
 
     dataStruct.station = [];
 
+    if isempty(files)
+        
+        error('Check path name for data; no files found')
+        
+    end
+    
     for k = 1:length(files)
 
+        disp([ 'Loading data for ' s{2} ' on component ' s{3} ]);
+        
         %%%%%%%%%%%
         %How to get statoin latitude and longitude????
         [D, ~] = rdmseed([ files(k).folder '\' files(k).name ]);
