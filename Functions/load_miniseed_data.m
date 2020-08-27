@@ -13,14 +13,13 @@ function dataStruct = load_miniseed_data(Parameters)
     
     for k = 1:length(files)
 
+        s = strsplit(files(k).name, '_');
+        s = strsplit(s{1}, '.');%s(1) is network, s(2) is station, s(3) is channel
         disp([ 'Loading data for ' s{2} ' on component ' s{3} ]);
         
         %%%%%%%%%%%
         %How to get statoin latitude and longitude????
         [D, ~] = rdmseed([ files(k).folder '\' files(k).name ]);
-
-        s = strsplit(files(k).name, '_');
-        s = strsplit(s{1}, '.');%s(1) is network, s(2) is station, s(3) is channel
         
         if ~any(strcmp({dataStruct.station}, s{2}))
 
