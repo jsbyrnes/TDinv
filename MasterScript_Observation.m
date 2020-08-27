@@ -19,19 +19,33 @@ Parameters = define_parameters( );
 %%
 %%%%%%%%%%%%%
 %get the data
-if strcmp(Parameters.file_type, 'SAC')
 
-    dataStruct = load_sac_data(Parameters);
+check = exist(['./Observations/' Parameters.run_name '.mat' ]);
+
+if check
     
-elseif strcmp(Parameters.file_type, 'miniseed')
+    load(['./Observations/' Parameters.run_name '.mat' ]);
     
-    dataStruct = load_miniseed_data(Parameters);
+else
+
+    if strcmp(Parameters.file_type, 'SAC')
+
+        dataStruct = load_sac_data(Parameters);
+
+    elseif strcmp(Parameters.file_type, 'miniseed')
+
+        dataStruct = load_miniseed_data(Parameters);
+
+    elseif strcmp(Parameters.file_type, 'IRIS')
+
+        dataStruct = load_data_from_IRIS(Parameters);
+
+    end
     
-elseif strcmp(Parameters.file_type, 'IRIS')
-    
-    dataStruct = load_data_from_IRIS(Parameters);
-    
+    save(['./Observations/' Parameters.run_name '.mat' ], 'dataStruct');
+
 end
+
 %%
 %%%%%%%%
 %do SPAC
@@ -55,8 +69,8 @@ for n = 1:npairs
     r(n)   = 10/(111.12*1000);
     azi(n) = 0;
     
-    C       = zeros(length(npairs), 3, length(Parameters.freq_range));
-    C_error = zeros(length(npairs), 3, length(Parameters.freq_range));
+    C       = zeros(length(npairs), 3, length(Parameters.spac_freq));
+    C_error = zeros(length(npairs), 3, length(Parameters.spac_freq));
     
     for s = 1:length(Parameters.sections)
 

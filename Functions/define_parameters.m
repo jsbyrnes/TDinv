@@ -1,6 +1,6 @@
 function [Parameters] = define_parameters( )
 
-    Parameters.run_name        = 'Cavola';
+    Parameters.run_name        = 'Alluvium';
 
     %directory for sac files
     Parameters.file_type       = 'miniseed';%SAC, miniseed, or IRIS (for iris fetch)
@@ -9,8 +9,7 @@ function [Parameters] = define_parameters( )
     Parameters.sign            = [ 1   1   1 ];%nodes have positive down for z
     Parameters.correlations    = { 'ZZ' }; %, 'RR', 'TT', 'ZR', 'ZT', 'RT'
     
-    Parameters.time_window      = [ -Inf Inf ];%in datenum. Use [ -Inf Inf ] for all data
-    %Parameters.time_window       = [ datenum('2004-09-18 12:00:00') datenum('2004-09-18 12:15:00') ];%[ 736497.546082949 736497.80046083 ];
+    Parameters.time_window       = [  737998.264727902  737998.381874859 ];%in datenum. Use [ -Inf Inf ] for all data
     Parameters.download_sections = 15/60/24; %inc for download
     Parameters.downsample        = 5;%during ZR, factor of the central f
     Parameters.bootstrap_samples = 1e2;%make it large if the dataset is small and vice versa

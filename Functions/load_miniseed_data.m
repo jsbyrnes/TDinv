@@ -68,26 +68,32 @@ function dataStruct = load_miniseed_data(Parameters)
         if any(chan_ind)
 
             %dataStruct(index).H(chan_ind)           = H;
-            dataStruct(index).data{chan_ind}        = d;%can be different lengths
+            %dataStruct(index).data{chan_ind}        = d;%can be different lengths
             
             if strcmp(Parameters.channels(chan_ind), 'HHZ')
             
                 dataStruct(index).azimuth(chan_ind)     = 0;%common fields
                 dataStruct(index).inclination(chan_ind) = 0;%common fields
                 
-            elseif strcmp(Parameters.channels(chan_ind), 'HHX')
+            elseif strcmp(Parameters.channels(chan_ind), 'HHX') || strcmp(Parameters.channels(chan_ind), 'HHE')
                 
                 dataStruct(index).azimuth(chan_ind)     = 0;%common fields
                 dataStruct(index).inclination(chan_ind) = 90;%common fields
                 
-            elseif strcmp(Parameters.channels(chan_ind), 'HHY')
+            elseif strcmp(Parameters.channels(chan_ind), 'HHY') || strcmp(Parameters.channels(chan_ind), 'HHN')
                 
                 dataStruct(index).azimuth(chan_ind)     = 90;%common fields
                 dataStruct(index).inclination(chan_ind) = 90;%common fields
                 
             end
 
-            dataStruct(index).T0{chan_ind}  = cat(1,D.t);%assumed common for each channel
+            t = cat(1,D.t);%assumed common for each channel
+            
+            d = d(t > Parameters.time_window(1) & t < Parameters.time_window(2));
+            t = t(t > Parameters.time_window(1) & t < Parameters.time_window(2));
+            
+            dataStruct(index).data{(chan_ind), 1} = d;
+            dataStruct(index).T0{(chan_ind), 1}   = t;
             
             disp([ 'Data loaded for ' s{2} ' on component ' s{3} ]);
             
@@ -99,65 +105,65 @@ function dataStruct = load_miniseed_data(Parameters)
 
     end
     
-    if length(Parameters.channels) == 1
-    
-        t1 = dataStruct(1).T0{1};
-        t2 = dataStruct(2).T0{1};
-            
-        d1 = dataStruct(1).data{1};
-        d2 = dataStruct(2).data{1};
-        
-        t2 = t2( (t2 >= Parameters.time_window(1))...
-            & (t2 <= Parameters.time_window(2)) );
-
-        %cut to the overlapping sections
-        [~, ia, ib] = intersect(t1,t2);
-        dataStruct(1).data{1}     = d1(ia);
-        dataStruct(2).data{1}     = d2(ib);
-        
-        dataStruct(1).sampleCount = length(dataStruct(1).data{1});
-        dataStruct(2).sampleCount = length(dataStruct(2).data{1});
-        
-        dataStruct(1).T0 = t1(ia);
-        dataStruct(2).T0 = t2(ib);
-        
-    elseif length(Parameters.channels) == 3
-    
-        for k = 1:length(dataStruct)
-
-            tZ = dataStruct(k).T0{1};
-            t1 = dataStruct(k).T0{2};
-            t2 = dataStruct(k).T0{3};
-
-            dZ = dataStruct(k).data{1};
-            d1 = dataStruct(k).data{2};
-            d2 = dataStruct(k).data{3};
-
-            [~, ia, ib]     = intersect(t1,t2);
-            d1              = d1(ia);
-            d2              = d2(ib);
-            t1              = t1(ia);
-            t2              = t2(ib);
-
-            [~, ia, ib]     = intersect(tZ,t1);
-            dZ              = dZ(ia);
-            d1              = d1(ib);
-            tZ              = tZ(ia);
-
-            [~, ia, ib]     = intersect(tZ,t2);
-            dZ              = dZ(ia);
-            d2              = d2(ib);
-
-            dataStruct(k).data{1, 1} = dZ;
-            dataStruct(k).data{2, 1} = d1;
-            dataStruct(k).data{3, 1} = d2;
-
-            dataStruct(k).sampleCount = length(dZ);
-            dataStruct(k).T0{1}       = tZ;
-
-        end
-
-    end
+%     if length(Parameters.channels) == 1
+%     
+%         t1 = dataStruct(1).T0{1};
+%         t2 = dataStruct(2).T0{1};
+%             
+%         d1 = dataStruct(1).data{1};
+%         d2 = dataStruct(2).data{1};
+%         
+%         t2 = t2( (t2 >= Parameters.time_window(1))...
+%             & (t2 <= Parameters.time_window(2)) );
+% 
+%         %cut to the overlapping sections
+%         [~, ia, ib] = intersect(t1,t2);
+%         dataStruct(1).data{1}     = d1(ia);
+%         dataStruct(2).data{1}     = d2(ib);
+%         
+%         dataStruct(1).sampleCount = length(dataStruct(1).data{1});
+%         dataStruct(2).sampleCount = length(dataStruct(2).data{1});
+%         
+%         dataStruct(1).T0 = t1(ia);
+%         dataStruct(2).T0 = t2(ib);
+%         
+%     elseif length(Parameters.channels) == 3
+%     
+%         for k = 1:length(dataStruct)
+% 
+%             tZ = dataStruct(k).T0{1};
+%             t1 = dataStruct(k).T0{2};
+%             t2 = dataStruct(k).T0{3};
+% 
+%             dZ = dataStruct(k).data{1};
+%             d1 = dataStruct(k).data{2};
+%             d2 = dataStruct(k).data{3};
+% 
+%             [~, ia, ib]     = intersect(t1,t2);
+%             d1              = d1(ia);
+%             d2              = d2(ib);
+%             t1              = t1(ia);
+%             t2              = t2(ib);
+% 
+%             [~, ia, ib]     = intersect(tZ,t1);
+%             dZ              = dZ(ia);
+%             d1              = d1(ib);
+%             tZ              = tZ(ia);
+% 
+%             [~, ia, ib]     = intersect(tZ,t2);
+%             dZ              = dZ(ia);
+%             d2              = d2(ib);
+% 
+%             dataStruct(k).data{1, 1} = dZ;
+%             dataStruct(k).data{1, 2} = d1;
+%             dataStruct(k).data{1, 3} = d2;
+% 
+%             dataStruct(k).sampleCount = length(dZ);
+%             dataStruct(k).T0{1}       = tZ;
+% 
+%         end
+%
+%    end
     
 end
 
