@@ -10,7 +10,7 @@ close all
 addpath('./Functions/')
 
 %%
-experiment_tag    = 'IP3000';
+experiment_tag    = 'Alluvium';
 radius_threshold  = 2;%m threshold for a "cluster" of radii to stack
 
 anisotropy = 0;
@@ -49,8 +49,8 @@ for correlation = 1:n
         subplot(max(radius_vec),1,k)
         hold on
         
-        plot(Parameters.freq_range, squeeze(C(radius_vec==k, correlation, :)), 'k--');
-        plot(Parameters.freq_range, mean(squeeze(C(radius_vec==k, correlation, :)), 1), 'k', 'LineWidth', 2);        
+        plot(Parameters.spac_freq, squeeze(C(radius_vec==k, correlation, :)), 'k--');
+        plot(Parameters.spac_freq, mean(squeeze(C(radius_vec==k, correlation, :)), 1), 'k', 'LineWidth', 2);        
     
         xlabel('Frequency, Hz');
         title([Parameters.correlations{correlation} ' at ' num2str(radius_cluster(k)) ' m ' ]);

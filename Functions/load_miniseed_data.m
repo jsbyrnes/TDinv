@@ -10,7 +10,7 @@ function dataStruct = load_miniseed_data(Parameters)
         error('Check path name for data; no files found')
         
     end
-    
+        
     for k = 1:length(files)
 
         s = strsplit(files(k).name, '_');
@@ -94,6 +94,8 @@ function dataStruct = load_miniseed_data(Parameters)
             
             dataStruct(index).data{(chan_ind), 1} = d;
             dataStruct(index).T0{(chan_ind), 1}   = t;
+                        
+            dataStruct(index).sections = 1;%not used for miniseed
             
             disp([ 'Data loaded for ' s{2} ' on component ' s{3} ]);
             

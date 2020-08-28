@@ -5,9 +5,9 @@ function [Parameters] = define_parameters( )
     %directory for sac files
     Parameters.file_type       = 'miniseed';%SAC, miniseed, or IRIS (for iris fetch)
     Parameters.data_directory  = '.\Alluvium\'; %I:\Data\IrishPark\SAC_Data\1000 '.\IrishParkData\' I:\Data\IrishPark\SAC_Data\1000_resp  C:\Users\Joseph Byrnes\Dropbox\Landslide_data_forJoe\Collected_short  I:\Data\IrishPark\SAC_Data\1000   C:\Users\Joseph Byrnes\Dropbox\Landslide_data_forJoe\DiamondArray L:\UMN\2001  
-    Parameters.channels        = { 'HHZ' 'HHN' 'HHE' };%make it Z first then north equiv, then east equiv 
+    Parameters.channels        = { 'HHZ' 'HHN' 'HHE' };%make it Z first then north equiv, then east equiv
     Parameters.sign            = [ 1   1   1 ];%nodes have positive down for z
-    Parameters.correlations    = { 'ZZ' }; %, 'RR', 'TT', 'ZR', 'ZT', 'RT'
+    Parameters.correlations    = { 'ZZ', 'RT' };
     
     Parameters.time_window       = [  737998.264727902  737998.381874859 ];%in datenum. Use [ -Inf Inf ] for all data
     Parameters.download_sections = 15/60/24; %inc for download
@@ -30,7 +30,7 @@ function [Parameters] = define_parameters( )
     Parameters.make_complex     = 0;
     Parameters.integrate        = 0;
     Parameters.onebit           = 0;
-    Parameters.spac_freq        = logspace(0, 1.33, 20);
+    Parameters.spac_freq        = logspace(0, 1.5, 100);
     Parameters.df               = Parameters.spac_freq/100; %0.01*ones(size(Parameters.freq_range));
     Parameters.segment_length   = 50;%in cycles
     Parameters.filter_type      = 'Gaussian';%Gaussian or Butterworth. Gaussian much faster

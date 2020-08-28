@@ -69,8 +69,8 @@ for n = 1:npairs
     r(n)   = 10/(111.12*1000);
     azi(n) = 0;
     
-    C       = zeros(length(npairs), 3, length(Parameters.spac_freq));
-    C_error = zeros(length(npairs), 3, length(Parameters.spac_freq));
+    C       = zeros(npairs, length(Parameters.correlations), length(Parameters.spac_freq));
+    C_error = zeros(npairs, length(Parameters.correlations), length(Parameters.spac_freq));
     
     for s = 1:length(Parameters.sections)
 
@@ -191,8 +191,8 @@ for n = 1:npairs
     
 end
 
-C       = C/length(dataStruct.sections);
-C_error = C_error/length(dataStruct.sections);
+C       = C/length(dataStruct(1).sections);
+C_error = C_error/length(dataStruct(1).sections);
 
 r = r*111.12*1000;%convert to m
 
@@ -216,7 +216,7 @@ for i = 1:length(dataStruct)
             Parameters.phase_range, Parameters.TR_max, Parameters.max_hits, Parameters.downsample, ...
             Parameters.sections);
         
-        time_start{i, k} = time_start{i, k} + dataStruct(i).T0(1);%in datenum from this
+        time_start{i, k} = time_start{i, k} + min(dataStruct(i).T0{1});%in datenum from this
                 
     end
         
