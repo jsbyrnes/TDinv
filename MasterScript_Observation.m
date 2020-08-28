@@ -62,16 +62,16 @@ station_pairs = reshape(station_pairs(station_pairs~=0), [ npairs 2]);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 %do SPAC in the time domain
+C       = zeros(npairs, length(Parameters.correlations), length(Parameters.spac_freq));
+C_error = zeros(npairs, length(Parameters.correlations), length(Parameters.spac_freq));
+
 for n = 1:npairs
     
     %[r(n), azi(n)] = distance(dataStruct(station_pairs(n,1)).latitude, dataStruct(station_pairs(n,1)).longitude...
     %    , dataStruct(station_pairs(n,2)).latitude, dataStruct(station_pairs(n,2)).longitude);
     r(n)   = 10/(111.12*1000);
     azi(n) = 0;
-    
-    C       = zeros(npairs, length(Parameters.correlations), length(Parameters.spac_freq));
-    C_error = zeros(npairs, length(Parameters.correlations), length(Parameters.spac_freq));
-    
+        
     for s = 1:length(Parameters.sections)
 
         T01 = dataStruct(station_pairs(n,1)).T0{s};
